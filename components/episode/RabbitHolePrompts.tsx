@@ -1,0 +1,43 @@
+'use client';
+import { useState } from 'react';
+import { RabbitHolePrompt } from '@/types/episode';
+import { cn } from '@/lib/utils';
+import { MessageCircle } from 'lucide-react';
+
+interface RabbitHolePromptsProps {
+  prompts: [RabbitHolePrompt, RabbitHolePrompt];
+  onPromptClick: (prompt: RabbitHolePrompt) => void;
+  className?: string;
+}
+
+export default function RabbitHolePrompts({ prompts, onPromptClick, className }: RabbitHolePromptsProps) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  return (
+    <div className={cn('space-y-2', className)}>
+      <div className="flex items-center gap-2 mb-3">
+        <MessageCircle className="w-3.5 h-3.5 text-gold" />
+        <span className="font-mono text-[0.65rem] text-gold uppercase tracking-wide">
+          Down the rabbit hole
+        </span>
+      </div>
+      {prompts.map((prompt, i) => (
+        <button
+          key={i}
+          onClick={() => onPromptClick(prompt)}
+          onMouseEnter={() => setHoveredIndex(i)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          className={cn(
+            'w-full text-left px-4 py-3 rounded-lg border transition-all duration-150 text-sm font-sans min-h-[44px]',
+            hoveredIndex === i
+              ? 'border-gold/40 bg-gold-faint text-paper'
+              : 'border-border bg-transparent text-paper-muted hover:text-paper'
+          )}
+        >
+          <span className="text-gold mr-2">↳</span>
+          {prompt.displayText}
+        </button>
+      ))}
+    </div>
+  );
+}

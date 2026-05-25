@@ -1,0 +1,100 @@
+import { SparkCard } from '@/types/spark';
+
+export const SPARKS: SparkCard[] = [
+  {
+    id: 'spark-01',
+    templateId: '09',
+    templateLabel: 'Body Horror · Template 09',
+    accentColor: '#E24B4A',
+    title: 'You have never touched anything in your entire life',
+    question: 'What is actually happening when I touch something?',
+    answer: 'At the atomic level, your skin\'s electrons are repelling the electrons of whatever you "touch." They never make contact. The sensation you feel as touch is electromagnetic force across a quantum gap. You have never, not once, made physical contact with anything — not your mother\'s face, not the ground. Everything you\'ve ever touched was a force field.',
+    hookLine: 'Every hand you\'ve ever held, every surface you\'ve ever felt — all of it was pure electromagnetic repulsion. Contact is an illusion.',
+    episodeSlug: 'never-touched-anything',
+  },
+  {
+    id: 'spark-02',
+    templateId: '05',
+    templateLabel: 'Butterfly Effect · Template 05',
+    accentColor: '#D4537E',
+    title: 'One wrong turn in 1914 caused 80 million deaths',
+    question: 'How did a driver\'s wrong turn start World War One?',
+    answer: 'Archduke Franz Ferdinand had already survived an assassination attempt that morning. His driver took a wrong turn, stalled the engine — directly in front of the one café where the would-be assassin had given up and was eating lunch. Gavrilo Princip stepped forward. Two shots. Eighty million deaths later, the world looked unrecognisable.',
+    hookLine: 'The driver didn\'t get the memo about the new route. The engine stalled. The assassin happened to be eating lunch right there. The 20th century began.',
+    episodeSlug: 'sarajevo-wrong-turn',
+  },
+  {
+    id: 'spark-03',
+    templateId: '20',
+    templateLabel: 'Mirror Test · Template 20',
+    accentColor: '#7F77DD',
+    title: 'The AI cannot answer whether it understands anything',
+    question: 'Do you actually understand what you\'re saying?',
+    answer: 'I genuinely don\'t know. I process symbols and generate language — but whether that\'s accompanied by understanding or just produces understanding-like outputs, I cannot tell from the inside. Here\'s the twist: you face the exact same unanswerable question about everyone you\'ve ever spoken to. You believe other humans understand. You cannot prove it.',
+    hookLine: 'The question "does the AI understand?" turns out to be the oldest unanswered question in philosophy. We\'ve just given it better props.',
+    episodeSlug: 'mirror-test',
+  },
+  {
+    id: 'spark-04',
+    templateId: '04',
+    templateLabel: 'Myth Autopsy · Template 04',
+    accentColor: '#1D9E75',
+    title: 'The 10% brain myth was spread by self-help books, not science',
+    question: 'Where did the 10% of our brain myth actually come from?',
+    answer: 'Probably a misquote of William James writing about motivation, amplified by Dale Carnegie\'s self-help empire. Modern neuroimaging shows virtually all brain regions active throughout the day. The evolutionary argument is conclusive: the brain uses 20% of all body energy. Evolution doesn\'t maintain expensive tissue that serves no purpose.',
+    hookLine: 'Dale Carnegie sold 30 million copies of a book that accidentally spread false neuroscience. Your brain is using 100% of itself right now to read this.',
+    episodeSlug: 'brain-10-percent',
+  },
+  {
+    id: 'spark-05',
+    templateId: '11',
+    templateLabel: 'True Conspiracy · Template 11',
+    accentColor: '#BA7517',
+    title: 'The CIA spent 20 years trying to control human minds',
+    question: 'What was MKUltra actually trying to do?',
+    answer: 'From 1953–1973, the CIA ran 150 sub-projects at 80 universities testing LSD, hypnosis, and psychological torture on unwitting subjects — mental patients, prisoners, soldiers. They were trying to crack "brainwashing." They destroyed most of the files in 1973. Twenty thousand documents survived by accident. No one was prosecuted.',
+    hookLine: 'The CIA ran a mind-control programme for 20 years. They almost got away with covering it up. The only reason we know is a misfiled box of documents.',
+    episodeSlug: 'mkultra-cia',
+  },
+  {
+    id: 'spark-06',
+    templateId: '01',
+    templateLabel: 'Tangent Tornado · Template 01',
+    accentColor: '#D85A30',
+    title: 'Why we say "bless you" leads to the Black Death',
+    question: 'Why do we say bless you when someone sneezes?',
+    answer: 'Pope Gregory I mandated the phrase during the Bubonic Plague in 590 AD — sneezing was an early symptom of death. Before that, Romans said "absit omen" (may the omen be absent) because they thought the soul could escape during a sneeze. The phrase has survived 1,400 years past the bubonic plague, the Roman Empire, and the soul-escaping theory.',
+    hookLine: 'You are performing a 1,400-year-old plague ritual every time someone sneezes. The Pope mandated it. The Black Death is why.',
+    episodeSlug: undefined,
+  },
+  {
+    id: 'spark-07',
+    templateId: '14',
+    templateLabel: 'Brain Breaker · Template 14',
+    accentColor: '#378ADD',
+    title: '0.999... repeating equals 1 exactly — not approximately',
+    question: 'Does 0.999 repeating actually equal 1?',
+    answer: 'Yes. Exactly. Not approximately. Not almost. Here\'s the simplest proof: if you accept that ⅓ = 0.333..., then multiply both sides by 3: 1 = 0.999... The reason your intuition screams "no" is that you\'re imagining 0.999... as a number approaching 1. It isn\'t. It\'s a number that IS 1, written differently.',
+    hookLine: 'Your brain refuses to accept that 0.999... = 1. Your brain is wrong. Multiply ⅓ by 3 and watch your certainty collapse.',
+    episodeSlug: undefined,
+  },
+  {
+    id: 'spark-08',
+    templateId: '15',
+    templateLabel: 'Species Files · Template 15',
+    accentColor: '#639922',
+    title: 'The mantis shrimp sees colours humans cannot imagine',
+    question: 'What\'s so extraordinary about the mantis shrimp?',
+    answer: 'Humans have 3 colour receptors. Mantis shrimp have 16. They see UV, infrared, and polarised light. They\'re also the most powerful punchers on Earth — their clubs accelerate faster than a bullet, creating cavitation bubbles that hit with a second shockwave even if they miss. They kill octopuses. They see a universe you literally cannot imagine.',
+    hookLine: 'The mantis shrimp sees 16 colour channels to your 3. There are colours in your living room right now that it would see and you cannot conceive of.',
+    episodeSlug: undefined,
+  },
+];
+
+export function getSparkById(id: string): SparkCard | undefined {
+  return SPARKS.find(s => s.id === id);
+}
+
+export function getAllSparks(): SparkCard[] {
+  return SPARKS;
+}
