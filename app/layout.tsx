@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import NavBar from '@/components/nav/NavBar';
+import Sidebar from '@/components/nav/Sidebar';
+import ThemeProvider from '@/components/ui/ThemeProvider';
 import Providers from './providers';
 
 const playfair = Playfair_Display({
@@ -51,11 +52,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${playfair.variable} ${inter.variable} ${jetbrains.variable}`}
+      data-theme="dark"
     >
-      <body className="bg-ink text-paper min-h-[100svh] antialiased">
+      <body className="min-h-[100svh] antialiased" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
         <Providers>
-          <NavBar />
-          <main className="pt-14 pb-16 md:pb-0">{children}</main>
+          <ThemeProvider>
+            <Sidebar />
+            <main className="min-h-[100svh]">{children}</main>
+          </ThemeProvider>
         </Providers>
       </body>
     </html>
