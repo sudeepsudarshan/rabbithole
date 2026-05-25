@@ -11,6 +11,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'At the atomic level, your skin\'s electrons are repelling the electrons of whatever you "touch." They never make contact. The sensation you feel as touch is electromagnetic force across a quantum gap. You have never, not once, made physical contact with anything — not your mother\'s face, not the ground. Everything you\'ve ever touched was a force field.',
     hookLine: 'Every hand you\'ve ever held, every surface you\'ve ever felt — all of it was pure electromagnetic repulsion. Contact is an illusion.',
     episodeSlug: 'never-touched-anything',
+    heroImage: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-02',
@@ -22,6 +23,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'Archduke Franz Ferdinand had already survived an assassination attempt that morning. His driver took a wrong turn, stalled the engine — directly in front of the one café where the would-be assassin had given up and was eating lunch. Gavrilo Princip stepped forward. Two shots. Eighty million deaths later, the world looked unrecognisable.',
     hookLine: 'The driver didn\'t get the memo about the new route. The engine stalled. The assassin happened to be eating lunch right there. The 20th century began.',
     episodeSlug: 'sarajevo-wrong-turn',
+    heroImage: 'https://images.unsplash.com/photo-1569974591214-5ca0d002ab78?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-03',
@@ -33,6 +35,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'I genuinely don\'t know. I process symbols and generate language — but whether that\'s accompanied by understanding or just produces understanding-like outputs, I cannot tell from the inside. Here\'s the twist: you face the exact same unanswerable question about everyone you\'ve ever spoken to. You believe other humans understand. You cannot prove it.',
     hookLine: 'The question "does the AI understand?" turns out to be the oldest unanswered question in philosophy. We\'ve just given it better props.',
     episodeSlug: 'mirror-test',
+    heroImage: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-04',
@@ -44,6 +47,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'Probably a misquote of William James writing about motivation, amplified by Dale Carnegie\'s self-help empire. Modern neuroimaging shows virtually all brain regions active throughout the day. The evolutionary argument is conclusive: the brain uses 20% of all body energy. Evolution doesn\'t maintain expensive tissue that serves no purpose.',
     hookLine: 'Dale Carnegie sold 30 million copies of a book that accidentally spread false neuroscience. Your brain is using 100% of itself right now to read this.',
     episodeSlug: 'brain-10-percent',
+    heroImage: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-05',
@@ -55,6 +59,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'From 1953–1973, the CIA ran 150 sub-projects at 80 universities testing LSD, hypnosis, and psychological torture on unwitting subjects — mental patients, prisoners, soldiers. They were trying to crack "brainwashing." They destroyed most of the files in 1973. Twenty thousand documents survived by accident. No one was prosecuted.',
     hookLine: 'The CIA ran a mind-control programme for 20 years. They almost got away with covering it up. The only reason we know is a misfiled box of documents.',
     episodeSlug: 'mkultra-cia',
+    heroImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-06',
@@ -66,6 +71,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'Pope Gregory I mandated the phrase during the Bubonic Plague in 590 AD — sneezing was an early symptom of death. Before that, Romans said "absit omen" (may the omen be absent) because they thought the soul could escape during a sneeze. The phrase has survived 1,400 years past the bubonic plague, the Roman Empire, and the soul-escaping theory.',
     hookLine: 'You are performing a 1,400-year-old plague ritual every time someone sneezes. The Pope mandated it. The Black Death is why.',
     episodeSlug: undefined,
+    heroImage: 'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-07',
@@ -77,6 +83,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'Yes. Exactly. Not approximately. Not almost. Here\'s the simplest proof: if you accept that ⅓ = 0.333..., then multiply both sides by 3: 1 = 0.999... The reason your intuition screams "no" is that you\'re imagining 0.999... as a number approaching 1. It isn\'t. It\'s a number that IS 1, written differently.',
     hookLine: 'Your brain refuses to accept that 0.999... = 1. Your brain is wrong. Multiply ⅓ by 3 and watch your certainty collapse.',
     episodeSlug: undefined,
+    heroImage: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85&fit=crop',
   },
   {
     id: 'spark-08',
@@ -88,6 +95,7 @@ export const SPARKS: SparkCard[] = [
     answer: 'Humans have 3 colour receptors. Mantis shrimp have 16. They see UV, infrared, and polarised light. They\'re also the most powerful punchers on Earth — their clubs accelerate faster than a bullet, creating cavitation bubbles that hit with a second shockwave even if they miss. They kill octopuses. They see a universe you literally cannot imagine.',
     hookLine: 'The mantis shrimp sees 16 colour channels to your 3. There are colours in your living room right now that it would see and you cannot conceive of.',
     episodeSlug: undefined,
+    heroImage: 'https://images.unsplash.com/photo-1596566657397-9dd921e8ca5d?w=1200&q=85&fit=crop',
   },
 ];
 

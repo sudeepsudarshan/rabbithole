@@ -6,9 +6,21 @@
   --background: #0F0E0C;
   --foreground: #F5F0E8;
   --gold: #C9A84C;
+  --card-bg: #1A1814;
+  --card-bg-2: #2C2822;
+  --border-color: rgba(255, 255, 255, 0.08);
   --font-playfair: 'Playfair Display', Georgia, serif;
   --font-inter: 'Inter', system-ui, sans-serif;
   --font-jetbrains: 'JetBrains Mono', monospace;
+}
+
+/* Light mode overrides */
+:root[data-theme="light"] {
+  --background: #F5F0E8;
+  --foreground: #0F0E0C;
+  --card-bg: #EDE7D9;
+  --card-bg-2: #E0D8C8;
+  --border-color: rgba(15, 14, 12, 0.12);
 }
 
 * {
@@ -25,6 +37,13 @@ body {
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-aware card background */
+.theme-card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
 }
 
 /* Scrollbar styling */
@@ -49,7 +68,7 @@ body {
 /* Selection */
 ::selection {
   background: rgba(201, 168, 76, 0.3);
-  color: #F5F0E8;
+  color: #0F0E0C;
 }
 
 /* Focus ring */
@@ -72,6 +91,29 @@ body {
   margin-left: 1px;
   vertical-align: text-bottom;
   animation: blink 0.7s step-end infinite;
+}
+
+/* Rabbit hole animation keyframes */
+@keyframes rabbitBounce {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+
+@keyframes holeExpand {
+  0% { transform: scale(0); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: scale(20); opacity: 1; }
+}
+
+@keyframes rabbitDive {
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+  60% { transform: translateY(20px) scale(0.7) rotate(15deg); opacity: 0.8; }
+  100% { transform: translateY(60px) scale(0.1) rotate(30deg); opacity: 0; }
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
 }
 
 /* Smooth transitions */
@@ -105,8 +147,8 @@ body {
 
 /* Ink overlay for cards */
 .card-ink {
-  background: #1A1814;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
 }
 
@@ -117,6 +159,16 @@ body {
   font-style: italic;
   line-height: 1.8;
   color: #EDE7D9;
+}
+
+/* Podcast turn reveal animation */
+@keyframes turnReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.podcast-turn {
+  animation: turnReveal 0.4s ease forwards;
 }
 
 /* Reduced motion */
