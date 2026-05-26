@@ -41,6 +41,12 @@ export const metadata: Metadata = {
     title: 'Down the Rabbit Hole with AI',
     description: 'Start with any question. End somewhere completely unexpected.',
   },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,          // prevent double-tap zoom on feed
+    viewportFit: 'cover',     // let content go under notch (we handle safe areas ourselves)
+  },
 };
 
 export default function RootLayout({
@@ -54,11 +60,15 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} ${jetbrains.variable}`}
       data-theme="dark"
     >
-      <body className="min-h-[100svh] antialiased" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
+      <body
+        className="antialiased overflow-hidden"
+        style={{ background: 'var(--background)', color: 'var(--foreground)' }}
+      >
         <Providers>
           <ThemeProvider>
             <Sidebar />
-            <main className="min-h-[100svh]">{children}</main>
+            {/* overflow:auto lets inner pages scroll while feed is self-contained */}
+            <main className="h-[100svh] overflow-y-auto">{children}</main>
           </ThemeProvider>
         </Providers>
       </body>
