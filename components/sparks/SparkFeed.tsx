@@ -1,29 +1,28 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
+import { cn } from '@/lib/utils';
 import { useSwipe } from '@/hooks/useSwipe';
 import SparkCard from './SparkCard';
-import SparkDots from './SparkDots';
 import RabbitHoleAnimation from './RabbitHoleAnimation';
 
 interface SparkFeedProps {
   sparks: SparkCardType[];
-  className?: string;
   infinite?: boolean;
   onReshuffle?: () => void;
 }
 
-export default function SparkFeed({ sparks, className, infinite = false, onReshuffle }: SparkFeedProps) {
+export default function SparkFeed({ sparks, infinite = false, onReshuffle }: SparkFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'up' | 'down'>('up');
   const [animating, setAnimating] = useState(false);
   const [pendingNext, setPendingNext] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const wheelLock = useRef(false);
 
-  // Called when rabbit hole animation finishes
+  // ── Navigation helpers ────────────────────────────────────────────
   const handleAnimationComplete = useCallback(() => {
     setAnimating(false);
     if (pendingNext) {
@@ -40,9 +39,7 @@ export default function SparkFeed({ sparks, className, infinite = false, onReshu
   const goNext = useCallback(() => {
     if (animating) return;
     if (!infinite && currentIndex >= sparks.length - 1) return;
-
     setDirection('up');
-
     if (shouldReduceMotion) {
       if (infinite && currentIndex >= sparks.length - 1) {
         onReshuffle?.();
@@ -52,118 +49,119 @@ export default function SparkFeed({ sparks, className, infinite = false, onReshu
       }
       return;
     }
-
-    // Trigger rabbit hole animation, then advance
     setAnimating(true);
     setPendingNext(true);
   }, [animating, currentIndex, sparks.length, infinite, shouldReduceMotion, onReshuffle]);
 
   const goPrev = useCallback(() => {
+    if (animating) return;
     if (currentIndex > 0) {
       setDirection('down');
       setCurrentIndex((prev) => prev - 1);
     }
-  }, [currentIndex]);
+  }, [animating, currentIndex]);
 
+  // ── Input handlers ────────────────────────────────────────────────
   const { onTouchStart, onTouchEnd } = useSwipe(goNext, goPrev);
 
+  // Keyboard
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') goNext();
       if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') goPrev();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [goNext, goPrev]);
 
-  const variants = shouldReduceMotion
-    ? { enter: {}, center: {}, exit: {} }
+  // Wheel (desktop)
+  const handleWheel = useCallback(
+    (e: React.WheelEvent) => {
+      if (wheelLock.current || Math.abs(e.deltaY) < 30) return;
+      wheelLock.current = true;
+      setTimeout(() => { wheelLock.current = false; }, 850);
+      if (e.deltaY > 0) goNext();
+      else goPrev();
+    },
+    [goNext, goPrev]
+  );
+
+  // ── Animation variants ────────────────────────────────────────────
+  const variants: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         enter: (d: string) => ({
           y: d === 'up' ? '100%' : '-100%',
-          opacity: 0,
         }),
         center: {
           y: 0,
-          opacity: 1,
-          transition: {
-            type: 'spring' as const,
-            stiffness: 300,
-            damping: 30,
-          },
+          transition: { type: 'spring' as const, stiffness: 380, damping: 36 },
         },
         exit: (d: string) => ({
-          y: d === 'up' ? '-100%' : '100%',
+          y: d === 'up' ? '-5%' : '5%',
           opacity: 0,
-          transition: { duration: 0.2 },
+          scale: 0.97,
+          transition: { duration: 0.18, ease: 'easeIn' as const },
         }),
       };
 
-  const atEnd = !infinite && currentIndex >= sparks.length - 1;
+  const spark = sparks[currentIndex];
 
   return (
     <>
       <div
-        className={className}
+        className="relative h-[100svh] w-full overflow-hidden bg-black touch-none"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
+        onWheel={handleWheel}
       >
-        {/* Card area */}
-        <div className="relative overflow-hidden flex-1 rounded-2xl border border-border bg-ink-50">
-          <AnimatePresence custom={direction} mode="wait">
-            <motion.div
-              key={currentIndex}
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              className="absolute inset-0"
+        {/* ── Stories-style progress bars ──────────────────────────── */}
+        <div
+          className="absolute inset-x-0 z-20 flex gap-1.5 px-4"
+          style={{ top: 'max(12px, env(safe-area-inset-top))' }}
+        >
+          {sparks.map((_, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-full overflow-hidden"
+              style={{ height: '2.5px', background: 'rgba(255,255,255,0.18)' }}
             >
-              <SparkCard spark={sparks[currentIndex]} isActive />
-            </motion.div>
-          </AnimatePresence>
+              <div
+                className={cn(
+                  'h-full rounded-full',
+                  i < currentIndex ? 'w-full' : i === currentIndex ? 'w-full' : 'w-0'
+                )}
+                style={{
+                  background:
+                    i < currentIndex
+                      ? 'rgba(255,255,255,0.65)'
+                      : i === currentIndex
+                      ? spark.accentColor
+                      : 'transparent',
+                  transition: 'width 0.3s ease',
+                }}
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Controls */}
-        <div className="mt-4 flex items-center justify-between px-1">
-          <button
-            onClick={goPrev}
-            disabled={currentIndex === 0}
-            className="p-2 text-paper-faint hover:text-paper disabled:opacity-30 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-            aria-label="Previous spark"
+        {/* ── Spark cards ───────────────────────────────────────────── */}
+        <AnimatePresence custom={direction} mode="wait">
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="absolute inset-0"
           >
-            <ChevronUp className="w-5 h-5" />
-          </button>
-
-          <SparkDots
-            count={sparks.length}
-            current={currentIndex}
-            onSelect={(i) => {
-              setDirection(i > currentIndex ? 'up' : 'down');
-              setCurrentIndex(i);
-            }}
-          />
-
-          <button
-            onClick={goNext}
-            disabled={atEnd && !infinite}
-            className="p-2 text-paper-faint hover:text-paper disabled:opacity-30 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-            aria-label="Next spark"
-          >
-            <ChevronDown className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Template name display */}
-        <div className="mt-2 text-center">
-          <span className="font-mono text-[0.65rem] text-paper-faint">
-            {sparks[currentIndex].templateLabel}
-          </span>
-        </div>
+            <SparkCard spark={spark} isActive />
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Rabbit hole transition animation */}
+      {/* Rabbit-hole transition overlay */}
       <RabbitHoleAnimation active={animating} onComplete={handleAnimationComplete} />
     </>
   );

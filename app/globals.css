@@ -29,6 +29,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Prevent bounce scroll and overscroll on mobile */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -38,6 +41,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* Prevent pull-to-refresh interfering with swipe feed */
+  overscroll-behavior-y: none;
 }
 
 /* Theme-aware card background */

@@ -15,31 +15,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 export default function SparkFeedHome() {
   const [seed, setSeed] = useState(0);
-
-  const sparks = useMemo(() => shuffle(SPARKS), [seed]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleReshuffle = useCallback(() => {
-    setSeed((s) => s + 1);
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const sparks = useMemo(() => shuffle(SPARKS), [seed]);
+  const handleReshuffle = useCallback(() => setSeed((s) => s + 1), []);
 
   return (
-    <div className="h-[100svh] w-full flex flex-col p-3 pt-3">
-      {/* Subtle header hint */}
-      <div className="flex items-center justify-between px-2 pb-2">
-        <p className="font-mono text-[0.6rem] uppercase tracking-widest text-paper-faint/60">
-          Sparks · swipe up to explore
-        </p>
-        <p className="font-mono text-[0.6rem] text-paper-faint/40">
-          {SPARKS.length} topics
-        </p>
-      </div>
-
-      <SparkFeed
-        sparks={sparks}
-        className="flex-1 flex flex-col"
-        infinite
-        onReshuffle={handleReshuffle}
-      />
-    </div>
+    <SparkFeed sparks={sparks} infinite onReshuffle={handleReshuffle} />
   );
 }
