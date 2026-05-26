@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mic, MessageCircle, BookOpen, ChevronUp } from 'lucide-react';
+import { Mic, MessageCircle, BookOpen, ChevronUp, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
 import { cn } from '@/lib/utils';
@@ -13,35 +13,36 @@ import AskModal from './AskModal';
 interface SparkCardProps {
   spark: SparkCardType;
   isActive?: boolean;
+  onOpenTemplatePicker?: () => void;
+  selectedTemplateIds?: string[];
 }
 
+// 25% smaller than original 50px = 38px circle, 17px icon
 function ActionBtn({
   icon: Icon,
   label,
   onClick,
-  accentColor,
   href,
 }: {
   icon: React.ElementType;
   label: string;
   onClick?: () => void;
-  accentColor: string;
   href?: string;
 }) {
   const content = (
-    <div className="flex flex-col items-center gap-[5px]">
+    <div className="flex flex-col items-center gap-[4px]">
       <div
-        className="w-[50px] h-[50px] rounded-full flex items-center justify-center border"
+        className="w-[38px] h-[38px] rounded-full flex items-center justify-center border"
         style={{
-          background: 'rgba(0,0,0,0.45)',
-          backdropFilter: 'blur(12px)',
-          borderColor: 'rgba(255,255,255,0.18)',
-          WebkitBackdropFilter: 'blur(12px)',
+          background: 'rgba(0,0,0,0.50)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          borderColor: 'rgba(255,255,255,0.20)',
         }}
       >
-        <Icon className="w-[22px] h-[22px] text-white" />
+        <Icon className="w-[17px] h-[17px] text-white" />
       </div>
-      <span className="text-[0.55rem] text-white/60 font-mono uppercase tracking-widest">
+      <span className="text-[0.48rem] text-white/55 font-mono uppercase tracking-widest leading-none">
         {label}
       </span>
     </div>
@@ -66,9 +67,23 @@ function ActionBtn({
   );
 }
 
-export default function SparkCard({ spark, isActive = false }: SparkCardProps) {
+export default function SparkCard({
+  spark,
+  isActive = false,
+  onOpenTemplatePicker,
+  selectedTemplateIds = [],
+}: SparkCardProps) {
   const [podcastOpen, setPodcastOpen] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
+
+  // Deeper always links somewhere — episode if available, else the template page
+  const deeperHref = spark.episodeSlug
+    ? `/episodes/${spark.episodeSlug}`
+    : `/templates/${spark.templateId}`;
+
+  // Template badge label — add filter indicator if templates are selected
+  const templateName = spark.templateLabel.split(' · ')[0];
+  const isFiltered = selectedTemplateIds.length > 0;
 
   return (
     <>
@@ -91,68 +106,69 @@ export default function SparkCard({ spark, isActive = false }: SparkCardProps) {
           />
         </div>
 
-        {/* Multi-stop gradient overlay — image visible at top, heavy black at bottom */}
+        {/* Gradient overlay */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.75) 38%, rgba(0,0,0,0.25) 62%, rgba(0,0,0,0.08) 100%)',
+              'linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.72) 38%, rgba(0,0,0,0.22) 62%, rgba(0,0,0,0.08) 100%)',
           }}
         />
 
-        {/* Accent colour bloom at bottom edge */}
+        {/* Accent colour bloom at bottom */}
         <div
           className="absolute bottom-0 inset-x-0 h-[45%] pointer-events-none"
           style={{
-            background: `linear-gradient(to top, ${spark.accentColor}28 0%, transparent 100%)`,
+            background: `linear-gradient(to top, ${spark.accentColor}26 0%, transparent 100%)`,
           }}
         />
 
-        {/* ── Right-side action column ─────────────────────────────── */}
-        {/* Positioned using safe-area-inset-bottom so it clears the iOS home bar */}
+        {/* ── Top-right action column (25% smaller, moved up) ───────── */}
         <div
-          className="absolute right-4 flex flex-col gap-6 items-center z-10"
-          style={{ bottom: 'calc(max(96px, env(safe-area-inset-bottom) + 80px))' }}
+          className="absolute right-3 flex flex-col gap-4 items-center z-10"
+          style={{ top: 'calc(max(56px, env(safe-area-inset-top) + 44px))' }}
         >
-          <ActionBtn
-            icon={Mic}
-            label="Podcast"
-            onClick={() => setPodcastOpen(true)}
-            accentColor={spark.accentColor}
-          />
-          <ActionBtn
-            icon={MessageCircle}
-            label="Ask"
-            onClick={() => setAskOpen(true)}
-            accentColor={spark.accentColor}
-          />
-          {spark.episodeSlug && (
-            <ActionBtn
-              icon={BookOpen}
-              label="Deeper"
-              href={`/episodes/${spark.episodeSlug}`}
-              accentColor={spark.accentColor}
-            />
-          )}
+          <ActionBtn icon={Mic} label="Podcast" onClick={() => setPodcastOpen(true)} />
+          <ActionBtn icon={MessageCircle} label="Ask" onClick={() => setAskOpen(true)} />
+          <ActionBtn icon={BookOpen} label="Deeper" href={deeperHref} />
         </div>
 
         {/* ── Bottom content overlay ───────────────────────────────── */}
-        {/* right padding leaves room for the action column */}
         <div
-          className="absolute inset-x-0 px-5 pr-[76px] z-10"
+          className="absolute inset-x-0 px-5 pr-[64px] z-10"
           style={{ bottom: 'calc(max(56px, env(safe-area-inset-bottom) + 44px))' }}
         >
-          {/* Template badge */}
-          <span
-            className="inline-flex items-center px-2.5 py-[3px] rounded-full text-[0.6rem] font-mono uppercase tracking-wider border mb-3"
+          {/* Template badge — tappable button to open picker */}
+          <button
+            onClick={onOpenTemplatePicker}
+            className={cn(
+              'inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-full',
+              'text-[0.6rem] font-mono uppercase tracking-wider border mb-3',
+              'transition-all active:scale-95',
+              'hover:opacity-90'
+            )}
             style={{
               color: spark.accentColor,
               borderColor: `${spark.accentColor}55`,
               background: `${spark.accentColor}18`,
             }}
+            aria-label="Open template filter"
           >
-            {spark.templateLabel}
-          </span>
+            {isFiltered ? (
+              <ChevronDown className="w-2.5 h-2.5 flex-shrink-0" />
+            ) : (
+              <SlidersHorizontal className="w-2.5 h-2.5 flex-shrink-0" />
+            )}
+            {templateName}
+            {isFiltered && (
+              <span
+                className="ml-0.5 px-1 rounded text-[0.48rem] font-bold"
+                style={{ background: `${spark.accentColor}35` }}
+              >
+                {selectedTemplateIds.length}
+              </span>
+            )}
+          </button>
 
           {/* Title */}
           <h2
@@ -162,7 +178,7 @@ export default function SparkCard({ spark, isActive = false }: SparkCardProps) {
             {spark.title}
           </h2>
 
-          {/* Answer — show 3 lines on short phones, 4 on taller ones */}
+          {/* Answer */}
           <p className="text-[0.83rem] text-white/75 font-serif italic leading-relaxed line-clamp-3 sm:line-clamp-4">
             {spark.answer}
           </p>

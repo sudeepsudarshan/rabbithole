@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
-import { cn } from '@/lib/utils';
 import { useSwipe } from '@/hooks/useSwipe';
 import SparkCard from './SparkCard';
 import RabbitHoleAnimation from './RabbitHoleAnimation';
@@ -12,9 +11,17 @@ interface SparkFeedProps {
   sparks: SparkCardType[];
   infinite?: boolean;
   onReshuffle?: () => void;
+  onOpenTemplatePicker?: () => void;
+  selectedTemplateIds?: string[];
 }
 
-export default function SparkFeed({ sparks, infinite = false, onReshuffle }: SparkFeedProps) {
+export default function SparkFeed({
+  sparks,
+  infinite = false,
+  onReshuffle,
+  onOpenTemplatePicker,
+  selectedTemplateIds = [],
+}: SparkFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'up' | 'down'>('up');
   const [animating, setAnimating] = useState(false);
@@ -22,7 +29,16 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
   const shouldReduceMotion = useReducedMotion();
   const wheelLock = useRef(false);
 
-  // ── Navigation helpers ────────────────────────────────────────────
+  // Reset index when sparks array changes (filter/reshuffle)
+  const prevLengthRef = useRef(sparks.length);
+  useEffect(() => {
+    if (sparks.length !== prevLengthRef.current) {
+      setCurrentIndex(0);
+      prevLengthRef.current = sparks.length;
+    }
+  }, [sparks]);
+
+  // ── Navigation ────────────────────────────────────────────────────
   const handleAnimationComplete = useCallback(() => {
     setAnimating(false);
     if (pendingNext) {
@@ -64,7 +80,6 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
   // ── Input handlers ────────────────────────────────────────────────
   const { onTouchStart, onTouchEnd } = useSwipe(goNext, goPrev);
 
-  // Keyboard
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') goNext();
@@ -74,7 +89,6 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
     return () => window.removeEventListener('keydown', handler);
   }, [goNext, goPrev]);
 
-  // Wheel (desktop)
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       if (wheelLock.current || Math.abs(e.deltaY) < 30) return;
@@ -90,9 +104,7 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
   const variants: Variants | undefined = shouldReduceMotion
     ? undefined
     : {
-        enter: (d: string) => ({
-          y: d === 'up' ? '100%' : '-100%',
-        }),
+        enter: (d: string) => ({ y: d === 'up' ? '100%' : '-100%' }),
         center: {
           y: 0,
           transition: { type: 'spring' as const, stiffness: 380, damping: 36 },
@@ -106,6 +118,7 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
       };
 
   const spark = sparks[currentIndex];
+  if (!spark) return null;
 
   return (
     <>
@@ -115,40 +128,9 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
         onTouchEnd={onTouchEnd}
         onWheel={handleWheel}
       >
-        {/* ── Stories-style progress bars ──────────────────────────── */}
-        <div
-          className="absolute inset-x-0 z-20 flex gap-1.5 px-4"
-          style={{ top: 'max(12px, env(safe-area-inset-top))' }}
-        >
-          {sparks.map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-full overflow-hidden"
-              style={{ height: '2.5px', background: 'rgba(255,255,255,0.18)' }}
-            >
-              <div
-                className={cn(
-                  'h-full rounded-full',
-                  i < currentIndex ? 'w-full' : i === currentIndex ? 'w-full' : 'w-0'
-                )}
-                style={{
-                  background:
-                    i < currentIndex
-                      ? 'rgba(255,255,255,0.65)'
-                      : i === currentIndex
-                      ? spark.accentColor
-                      : 'transparent',
-                  transition: 'width 0.3s ease',
-                }}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* ── Spark cards ───────────────────────────────────────────── */}
         <AnimatePresence custom={direction} mode="wait">
           <motion.div
-            key={currentIndex}
+            key={`${currentIndex}-${spark.id}`}
             custom={direction}
             variants={variants}
             initial="enter"
@@ -156,12 +138,16 @@ export default function SparkFeed({ sparks, infinite = false, onReshuffle }: Spa
             exit="exit"
             className="absolute inset-0"
           >
-            <SparkCard spark={spark} isActive />
+            <SparkCard
+              spark={spark}
+              isActive
+              onOpenTemplatePicker={onOpenTemplatePicker}
+              selectedTemplateIds={selectedTemplateIds}
+            />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Rabbit-hole transition overlay */}
       <RabbitHoleAnimation active={animating} onComplete={handleAnimationComplete} />
     </>
   );
