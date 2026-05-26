@@ -8,14 +8,13 @@ interface RabbitHoleAnimationProps {
   onComplete: () => void;
 }
 
-// SVG rabbit silhouette
 function RabbitSVG() {
   return (
     <svg
       viewBox="0 0 80 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-16 h-20 drop-shadow-2xl"
+      className="w-20 h-24 drop-shadow-2xl"
     >
       {/* Left ear */}
       <ellipse cx="25" cy="22" rx="9" ry="22" fill="#C9A84C" transform="rotate(-10 25 22)" />
@@ -52,20 +51,17 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
       calledRef.current = false;
       return;
     }
-
     if (shouldReduceMotion) {
       onComplete();
       return;
     }
-
-    // Call onComplete after animation duration
+    // 50% longer than original 900ms
     const timer = setTimeout(() => {
       if (!calledRef.current) {
         calledRef.current = true;
         onComplete();
       }
-    }, 900);
-
+    }, 1350);
     return () => clearTimeout(timer);
   }, [active, shouldReduceMotion, onComplete]);
 
@@ -79,49 +75,64 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-end overflow-hidden pointer-events-none"
-          style={{ background: 'rgba(15, 14, 12, 0.92)' }}
+          transition={{ duration: 0.22 }}
+          className="fixed inset-0 z-[100] overflow-hidden pointer-events-none"
+          style={{ background: 'rgba(15, 14, 12, 0.93)' }}
         >
-          {/* Concentric pulse rings from the hole */}
+          {/* "Down the rabbit hole…" text — above the rabbit */}
+          <motion.p
+            className="absolute left-1/2 -translate-x-1/2 font-serif italic text-gold text-xl tracking-wide whitespace-nowrap"
+            style={{ top: '22%' }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10] }}
+            transition={{ duration: 1.275, times: [0, 0.15, 0.7, 1] }}
+          >
+            Down the rabbit hole…
+          </motion.p>
+
+          {/* Concentric pulse rings — centred at hole position (top ~56%) */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="absolute bottom-[15%] w-20 h-10 rounded-full border border-gold/30"
-              initial={{ scale: 0.5, opacity: 0 }}
+              className="absolute left-1/2 -translate-x-1/2 rounded-full border border-gold/30"
+              style={{ top: '56%', width: 80, height: 40 }}
+              initial={{ scale: 0.5, opacity: 0, x: '-50%' }}
               animate={{ scale: [0.5, 2, 3.5], opacity: [0, 0.5, 0] }}
               transition={{
-                duration: 0.8,
-                delay: i * 0.15,
+                duration: 1.2,
+                delay: i * 0.225,
                 ease: 'easeOut',
               }}
             />
           ))}
 
-          {/* The hole */}
+          {/* The hole ellipse — centred */}
           <motion.div
-            className="absolute bottom-[10%] rounded-full"
+            className="absolute left-1/2 -translate-x-1/2 rounded-full"
             style={{
+              top: '56%',
               background: 'radial-gradient(ellipse, #000 40%, #1A1814 70%, transparent 100%)',
               border: '2px solid rgba(201,168,76,0.4)',
+              translateX: '-50%',
             }}
             initial={{ width: 0, height: 0 }}
-            animate={{ width: 120, height: 60 }}
-            transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+            animate={{ width: 140, height: 70 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
           />
 
-          {/* Rabbit */}
+          {/* Rabbit — centred, dives down into hole */}
           <motion.div
-            className="absolute bottom-[18%] flex flex-col items-center"
-            initial={{ y: 0, scale: 1, opacity: 1, rotate: 0 }}
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{ top: '38%' }}
+            initial={{ y: 0, scale: 1, opacity: 1, rotate: 0, x: '-50%' }}
             animate={{
-              y: [0, -20, -8, 40],
-              scale: [1, 1.05, 1, 0.15],
+              y: [0, -28, -12, 80],
+              scale: [1, 1.08, 1, 0.12],
               opacity: [1, 1, 1, 0],
-              rotate: [0, -5, 5, 0],
+              rotate: [0, -6, 6, 0],
             }}
             transition={{
-              duration: 0.85,
+              duration: 1.275,
               times: [0, 0.2, 0.5, 1],
               ease: ['easeOut', 'easeInOut', 'easeIn'],
             }}
@@ -129,23 +140,13 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
             <RabbitSVG />
           </motion.div>
 
-          {/* "Down the rabbit hole..." text */}
-          <motion.p
-            className="absolute top-[40%] font-serif italic text-gold text-xl tracking-wide"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10] }}
-            transition={{ duration: 0.85, times: [0, 0.2, 0.7, 1] }}
-          >
-            Down the rabbit hole…
-          </motion.p>
-
-          {/* Hole expanding to fill screen */}
+          {/* Hole expanding to fill screen — starts from centre */}
           <motion.div
-            className="absolute bottom-[10%] rounded-full bg-ink"
-            initial={{ width: 0, height: 0 }}
+            className="absolute left-1/2 -translate-x-1/2 rounded-full bg-ink"
+            style={{ top: '56%' }}
+            initial={{ width: 0, height: 0, x: '-50%' }}
             animate={{ width: 4000, height: 4000 }}
-            transition={{ duration: 0.35, delay: 0.65, ease: 'easeIn' }}
-            style={{ transformOrigin: 'center bottom' }}
+            transition={{ duration: 0.45, delay: 0.975, ease: 'easeIn' }}
           />
         </motion.div>
       )}

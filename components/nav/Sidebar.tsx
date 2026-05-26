@@ -33,19 +33,20 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Floating rabbit button */}
+      {/* Floating rabbit button — top-left, respects iOS notch */}
       <button
         onClick={() => setSidebarOpen(true)}
         className={cn(
-          'fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full',
-          'bg-ink border border-gold/40 hover:border-gold/80',
+          'fixed left-4 z-50 w-11 h-11 rounded-full',
+          'bg-black/50 backdrop-blur border border-gold/40 hover:border-gold/80',
           'flex items-center justify-center shadow-lg',
           'transition-all duration-200 hover:scale-110 active:scale-95',
           'group'
         )}
+        style={{ top: 'max(16px, env(safe-area-inset-top) + 8px)' }}
         aria-label="Open navigation"
       >
-        <Rabbit className="w-5 h-5 text-gold group-hover:text-gold-bright transition-colors" />
+        <Rabbit className="w-4 h-4 text-gold group-hover:text-gold-bright transition-colors" />
         {/* Pulse ring */}
         <span className="absolute inset-0 rounded-full border border-gold/20 animate-ping" />
       </button>
