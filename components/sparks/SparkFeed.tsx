@@ -6,6 +6,7 @@ import { SparkCard as SparkCardType } from '@/types/spark';
 import { useSwipe } from '@/hooks/useSwipe';
 import SparkCard from './SparkCard';
 import RabbitHoleAnimation from './RabbitHoleAnimation';
+import { type PanelTab } from './SparkPanel';
 
 interface SparkFeedProps {
   sparks: SparkCardType[];
@@ -13,6 +14,7 @@ interface SparkFeedProps {
   onReshuffle?: () => void;
   onOpenTemplatePicker?: () => void;
   selectedTemplateIds?: string[];
+  onOpenPanel?: (sparkId: string, tab: PanelTab) => void;
 }
 
 export default function SparkFeed({
@@ -21,6 +23,7 @@ export default function SparkFeed({
   onReshuffle,
   onOpenTemplatePicker,
   selectedTemplateIds = [],
+  onOpenPanel,
 }: SparkFeedProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'up' | 'down'>('up');
@@ -143,6 +146,7 @@ export default function SparkFeed({
               isActive
               onOpenTemplatePicker={onOpenTemplatePicker}
               selectedTemplateIds={selectedTemplateIds}
+              onOpenPanel={onOpenPanel}
             />
           </motion.div>
         </AnimatePresence>

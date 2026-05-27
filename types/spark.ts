@@ -5,8 +5,9 @@ export interface SparkCard {
   accentColor: string;
   title: string;              // 8–14 word hook
   question: string;           // The user's question (displayed in exchange)
-  answer: string;             // 40–60 word AI answer (displayed in exchange)
-  hookLine: string;           // 20–35 word share-worthy one-liner
+  answer: string;             // 60–90 word Vsauce-voice answer
+  hookLine: string;           // 20–30 word gut-punch one-liner
   episodeSlug?: string;       // Links to full episode if it exists
   heroImage: string;          // Curated Unsplash CDN URL for full-bleed background
+  suggestedQuestions: string[]; // 3 pre-seeded follow-up questions for the Ask tab
 }
