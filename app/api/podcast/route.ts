@@ -26,28 +26,28 @@ export async function POST(req: Request) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const prompt = `You are writing a fun, engaging, educational podcast transcript.
+  const prompt = `You are writing a podcast transcript. The energy is Vsauce meets Radiolab — two people who genuinely cannot stop thinking about this thing, losing their minds together on mic.
 
 Topic category: ${templateLabel}
 Episode title: ${title}
-Core fact: "${answer}"
-User's question: "${question}"
+Core insight: "${answer}"
+What triggered this: "${question}"
 
-Generate a 10-turn podcast conversation between two hosts:
-- Ray: curious, enthusiastic, asks great follow-up questions, occasionally makes witty remarks
-- Sage: deeply knowledgeable, gives jaw-dropping explanations, weaves in surprising twists and unexpected connections
+The two hosts:
+- JAY: The one who just learned this and is still processing it. Asks "but wait, that means...?" questions. Gets genuinely unsettled. Occasionally makes a dark joke when the implications get too big.
+- MAYA: Has been thinking about this for years. Drops the really uncomfortable follow-up facts. Does the thing where she goes quiet for a second before saying something devastating. Knows exactly where your brain is going to break next.
 
-Rules:
-- Start with Ray giving a gripping hook that makes the listener lean in
-- Each turn should be 60-110 words
-- Build in a "wait, what?!" moment around turn 5-6
-- End with a mind-bending takeaway that changes how you see the world
-- Keep it conversational, never lecture-y
-- Alternate strictly: Ray, Sage, Ray, Sage... (Ray starts, Ray ends)
-- Be entertaining AND accurate
+Rules for the transcript:
+- Jay opens with something that sounds almost too mundane, then immediately pulls the rug out
+- Minimum 10 turns, maximum 12. Strict alternation: Jay, Maya, Jay, Maya... (Jay always starts and ends)
+- Each turn is 60-100 words. No turn ends on a period — end on a comma, a dash, or an unanswered question
+- Turn 5 or 6: one host says something that makes the other go completely quiet before responding
+- The final Jay turn should end with a question so good that the listener will be thinking about it tomorrow
+- Never use the words "fascinating", "interesting", "indeed", or "certainly"
+- No lecture voice. This is a conversation between two people who are slightly scared of what they know
 
-Return ONLY valid JSON: { "turns": [{ "host": "Ray", "text": "..." }, { "host": "Sage", "text": "..." }, ...] }
-No preamble, no markdown fences, no commentary.`;
+Return ONLY valid JSON: { "turns": [{ "host": "Jay", "text": "..." }, { "host": "Maya", "text": "..." }, ...] }
+No preamble, no markdown fences, no commentary outside the JSON.`;
 
   const message = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
@@ -64,7 +64,6 @@ No preamble, no markdown fences, no commentary.`;
     const parsed = JSON.parse(content.text);
     return Response.json(parsed);
   } catch {
-    // Try to extract JSON from the response
     const match = content.text.match(/\{[\s\S]*\}/);
     if (match) {
       try {
