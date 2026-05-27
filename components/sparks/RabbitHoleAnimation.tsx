@@ -55,7 +55,6 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
       onComplete();
       return;
     }
-    // 50% longer than original 900ms
     const timer = setTimeout(() => {
       if (!calledRef.current) {
         calledRef.current = true;
@@ -76,28 +75,54 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.22 }}
-          className="fixed inset-0 z-[100] overflow-hidden pointer-events-none"
+          className="fixed inset-0 z-[100] overflow-hidden pointer-events-none flex items-center justify-center"
           style={{ background: 'rgba(15, 14, 12, 0.93)' }}
         >
-          {/* "Down the rabbit hole…" text — above the rabbit */}
+          {/*
+           * All children are positioned absolutely relative to the screen centre
+           * using left/top 50% + Framer Motion x/y offsets.
+           * We NEVER mix Tailwind -translate-x-1/2 with Framer Motion y animations —
+           * that overwrites the transform and breaks horizontal centering.
+           */}
+
+          {/* "Down the rabbit hole…" text — sits 120px above centre */}
           <motion.p
-            className="absolute left-1/2 -translate-x-1/2 font-serif italic text-gold text-xl tracking-wide whitespace-nowrap"
-            style={{ top: '22%' }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10] }}
+            className="absolute font-serif italic text-xl tracking-wide whitespace-nowrap"
+            style={{
+              left: '50%',
+              top: '50%',
+              color: '#C9A84C',
+            }}
+            initial={{ opacity: 0, x: '-50%', y: '-340%' }}
+            animate={{
+              opacity: [0, 1, 1, 0],
+              x: '-50%',
+              y: ['-340%', '-320%', '-320%', '-360%'],
+            }}
             transition={{ duration: 1.275, times: [0, 0.15, 0.7, 1] }}
           >
             Down the rabbit hole…
           </motion.p>
 
-          {/* Concentric pulse rings — centred at hole position (top ~56%) */}
+          {/* Concentric pulse rings — centred at hole (80px below centre) */}
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="absolute left-1/2 -translate-x-1/2 rounded-full border border-gold/30"
-              style={{ top: '56%', width: 80, height: 40 }}
-              initial={{ scale: 0.5, opacity: 0, x: '-50%' }}
-              animate={{ scale: [0.5, 2, 3.5], opacity: [0, 0.5, 0] }}
+              className="absolute rounded-full"
+              style={{
+                left: '50%',
+                top: '50%',
+                width: 80,
+                height: 40,
+                border: '1px solid rgba(201,168,76,0.3)',
+              }}
+              initial={{ scale: 0.5, opacity: 0, x: '-50%', y: 60 }}
+              animate={{
+                scale: [0.5, 2, 3.5],
+                opacity: [0, 0.5, 0],
+                x: '-50%',
+                y: 60,
+              }}
               transition={{
                 duration: 1.2,
                 delay: i * 0.225,
@@ -106,27 +131,28 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
             />
           ))}
 
-          {/* The hole ellipse — centred */}
+          {/* The hole ellipse — 80px below centre */}
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2 rounded-full"
+            className="absolute rounded-full"
             style={{
-              top: '56%',
+              left: '50%',
+              top: '50%',
               background: 'radial-gradient(ellipse, #000 40%, #1A1814 70%, transparent 100%)',
               border: '2px solid rgba(201,168,76,0.4)',
-              translateX: '-50%',
             }}
-            initial={{ width: 0, height: 0 }}
-            animate={{ width: 140, height: 70 }}
+            initial={{ width: 0, height: 0, x: '-50%', y: 60 }}
+            animate={{ width: 140, height: 70, x: '-50%', y: 60 }}
             transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
           />
 
-          {/* Rabbit — centred, dives down into hole */}
+          {/* Rabbit — 160px above centre, dives down into hole */}
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2"
-            style={{ top: '38%' }}
-            initial={{ y: 0, scale: 1, opacity: 1, rotate: 0, x: '-50%' }}
+            className="absolute"
+            style={{ left: '50%', top: '50%' }}
+            initial={{ x: '-50%', y: '-200%', scale: 1, opacity: 1, rotate: 0 }}
             animate={{
-              y: [0, -28, -12, 80],
+              x: '-50%',
+              y: ['-200%', '-220%', '-190%', '60px'],
               scale: [1, 1.08, 1, 0.12],
               opacity: [1, 1, 1, 0],
               rotate: [0, -6, 6, 0],
@@ -134,7 +160,6 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
             transition={{
               duration: 1.275,
               times: [0, 0.2, 0.5, 1],
-              ease: ['easeOut', 'easeInOut', 'easeIn'],
             }}
           >
             <RabbitSVG />
@@ -142,10 +167,14 @@ export default function RabbitHoleAnimation({ active, onComplete }: RabbitHoleAn
 
           {/* Hole expanding to fill screen — starts from centre */}
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2 rounded-full bg-ink"
-            style={{ top: '56%' }}
-            initial={{ width: 0, height: 0, x: '-50%' }}
-            animate={{ width: 4000, height: 4000 }}
+            className="absolute rounded-full"
+            style={{
+              left: '50%',
+              top: '50%',
+              background: '#0F0E0C',
+            }}
+            initial={{ width: 0, height: 0, x: '-50%', y: '-50%' }}
+            animate={{ width: 4000, height: 4000, x: '-50%', y: '-50%' }}
             transition={{ duration: 0.45, delay: 0.975, ease: 'easeIn' }}
           />
         </motion.div>
