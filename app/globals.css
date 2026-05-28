@@ -2,26 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #0F0E0C;
-  --foreground: #F5F0E8;
-  --gold: #C9A84C;
-  --card-bg: #1A1814;
-  --card-bg-2: #2C2822;
-  --border-color: rgba(255, 255, 255, 0.08);
+/* ─── Theme tokens ───────────────────────────────────────────────────── */
+
+/* Default / Dark — "Ink" edition */
+:root,
+[data-theme="dark"] {
+  /* Grounds — warm ink, never blue-black */
+  --bg-page:          #16110C;
+  --bg-elevated:      #1E1812;
+  --bg-sunken:        #110D09;
+  --bg-input:         #1A140F;
+  --bg-overlay:       rgba(0, 0, 0, 0.78);
+
+  /* Type — bone, never pure white */
+  --ink-primary:      #F0E6D2;
+  --ink-secondary:    #C4B89E;
+  --ink-muted:        #8A7E68;
+  --ink-faint:        #574E40;
+
+  /* Borders */
+  --border-hairline:  #2E2620;
+  --border-ink:       #6B5E48;
+  --border-accent:    #E27044;
+
+  /* Accents */
+  --accent-rust:      #E27044;
+  --accent-mustard:   #E6BC4E;
+  --accent-sage:      #8AA876;
+  --accent-rose:      #E5A19E;
+  --accent-sky:       #95B8CC;
+  --accent-plum:      #A984A9;
+
+  /* Interaction states */
+  --state-hover:      rgba(226, 112, 68, 0.10);
+  --state-active:     rgba(226, 112, 68, 0.18);
+  --state-focus-ring: #E27044;
+
+  /* Selection */
+  --selection-bg:     #E6BC4E;
+  --selection-text:   #16110C;
+
+  /* Font vars (kept for legacy .font-serif / .font-mono helpers) */
   --font-playfair: 'Playfair Display', Georgia, serif;
-  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-body:     'Inter Tight', 'Inter', system-ui, sans-serif;
   --font-jetbrains: 'JetBrains Mono', monospace;
 }
 
-/* Light mode overrides */
-:root[data-theme="light"] {
-  --background: #F5F0E8;
-  --foreground: #0F0E0C;
-  --card-bg: #EDE7D9;
-  --card-bg-2: #E0D8C8;
-  --border-color: rgba(15, 14, 12, 0.12);
+/* Light — "Paper" edition */
+[data-theme="light"] {
+  --bg-page:          #F4ECD8;
+  --bg-elevated:      #FAF3E0;
+  --bg-sunken:        #EADFC4;
+  --bg-input:         #FBF6E9;
+  --bg-overlay:       rgba(31, 27, 22, 0.60);
+
+  --ink-primary:      #1F1B16;
+  --ink-secondary:    #4A4339;
+  --ink-muted:        #8A8073;
+  --ink-faint:        #B8AE9C;
+
+  --border-hairline:  #D9CDB1;
+  --border-ink:       #2A241D;
+  --border-accent:    #C9582A;
+
+  --accent-rust:      #C9582A;
+  --accent-mustard:   #D4A437;
+  --accent-sage:      #6F8B5D;
+  --accent-rose:      #D08A87;
+  --accent-sky:       #7A9CB0;
+  --accent-plum:      #8E6B8E;
+
+  --state-hover:      rgba(201, 88, 42, 0.08);
+  --state-active:     rgba(201, 88, 42, 0.14);
+  --state-focus-ring: #C9582A;
+
+  --selection-bg:     #D4A437;
+  --selection-text:   #1F1B16;
 }
+
+/* ─── Global reset ───────────────────────────────────────────────────── */
 
 * {
   box-sizing: border-box;
@@ -29,29 +88,41 @@
 
 html {
   scroll-behavior: smooth;
-  /* Prevent bounce scroll and overscroll on mobile */
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-inter);
+  background: var(--bg-page);
+  color: var(--ink-primary);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  /* Prevent pull-to-refresh interfering with swipe feed */
+  letter-spacing: -0.01em;
+  /* All theme vars transition together — no element changes faster than another */
+  transition:
+    background-color 300ms ease-out,
+    color 300ms ease-out,
+    border-color 300ms ease-out;
   overscroll-behavior-y: none;
 }
 
-/* Theme-aware card background */
-.theme-card {
-  background: var(--card-bg);
-  border-color: var(--border-color);
+/* ─── Selection ──────────────────────────────────────────────────────── */
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
 }
 
-/* Scrollbar styling */
+/* ─── Focus ring — warm, not blue ────────────────────────────────────── */
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--state-focus-ring) 35%, transparent);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────── */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -62,43 +133,102 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(201, 168, 76, 0.2);
+  background: var(--border-ink);
+  opacity: 0.5;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 168, 76, 0.4);
+  background: var(--ink-muted);
 }
 
-/* Selection */
-::selection {
-  background: rgba(201, 168, 76, 0.3);
-  color: #0F0E0C;
+/* ─── Typography helpers ─────────────────────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-playfair);
 }
 
-/* Focus ring */
-:focus-visible {
-  outline: 2px solid #C9A84C;
-  outline-offset: 2px;
+.font-serif {
+  font-family: var(--font-playfair);
 }
 
-/* Blinking cursor animation */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+.font-mono {
+  font-family: var(--font-jetbrains);
 }
+
+/* Editorial narration (AI output, episode prose) — the ONLY place italic is expected */
+.narration {
+  font-family: var(--font-playfair);
+  font-size: 1.05rem;
+  font-style: italic;
+  line-height: 1.8;
+  color: var(--ink-primary);
+}
+
+/* ─── Streaming cursor ───────────────────────────────────────────────── */
 
 .streaming-cursor {
   display: inline-block;
   width: 2px;
   height: 1.1em;
-  background: #C9A84C;
+  background: var(--accent-rust);
   margin-left: 1px;
   vertical-align: text-bottom;
-  animation: blink 0.7s step-end infinite;
+  animation: blink 0.65s step-end infinite;
 }
 
-/* Rabbit hole animation keyframes */
+/* ─── Chapter-mark dividers — the Wes Anderson detail ───────────────── */
+
+/* Short centered rule between subsections */
+.chapter-mark {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chapter-mark::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 1px;
+  background: var(--ink-faint);
+}
+
+/* Ornamental rule between major page sections */
+.chapter-ornament {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.chapter-ornament::before,
+.chapter-ornament::after {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: var(--ink-faint);
+}
+
+.chapter-ornament-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+/* ─── Animation keyframes ────────────────────────────────────────────── */
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 @keyframes rabbitBounce {
   0%, 100% { transform: translateY(0) rotate(-5deg); }
   50% { transform: translateY(-12px) rotate(5deg); }
@@ -121,52 +251,6 @@ body {
   100% { transform: scale(2.5); opacity: 0; }
 }
 
-/* Smooth transitions */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-/* Typography helpers */
-.font-serif {
-  font-family: var(--font-playfair);
-}
-
-.font-mono {
-  font-family: var(--font-jetbrains);
-}
-
-/* Gold gradient text */
-.text-gold-gradient {
-  background: linear-gradient(135deg, #C9A84C, #DFC068);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Border gold glow */
-.border-gold-glow {
-  box-shadow: 0 0 20px rgba(201, 168, 76, 0.15);
-}
-
-/* Ink overlay for cards */
-.card-ink {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-}
-
-/* Episode narration text */
-.episode-narration {
-  font-family: var(--font-playfair);
-  font-size: 1.05rem;
-  font-style: italic;
-  line-height: 1.8;
-  color: #EDE7D9;
-}
-
-/* Podcast turn reveal animation */
 @keyframes turnReveal {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -176,7 +260,8 @@ body {
   animation: turnReveal 0.4s ease forwards;
 }
 
-/* Reduced motion */
+/* ─── Reduced motion ─────────────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
   .streaming-cursor {
     animation: none;
@@ -186,9 +271,11 @@ body {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 200ms !important;
   }
 }
+
+/* ─── Utility layer ──────────────────────────────────────────────────── */
 
 @layer utilities {
   .text-balance {

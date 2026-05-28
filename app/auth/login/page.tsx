@@ -13,39 +13,54 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-gold-faint border border-gold/30 flex items-center justify-center">
-            <Rabbit className="w-5 h-5 text-gold" />
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ background: 'var(--state-hover)', border: '1px solid var(--border-hairline)' }}
+          >
+            <Rabbit className="w-5 h-5 text-accent-rust" />
           </div>
-          <span className="font-serif italic text-lg text-paper">
+          <span className="font-serif text-lg text-ink-primary">
             Down the Rabbit Hole
           </span>
         </div>
 
-        {/* Card */}
-        <div className="rounded-xl border border-border bg-ink-50 p-8 space-y-6">
+        {/* Card — the manga frame: one deliberate ink border per page */}
+        <div
+          className="rounded-lg p-8 space-y-6"
+          style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-ink)',
+          }}
+        >
           <div className="text-center">
-            <h1 className="font-serif italic text-2xl text-paper mb-2">Sign in</h1>
-            <p className="text-xs text-paper-faint font-sans leading-relaxed">
+            <h1 className="font-serif text-2xl text-ink-primary mb-2">Sign in</h1>
+            <p className="text-xs text-ink-muted font-sans leading-relaxed">
               Save your rabbit holes, track episode progress, and access conversation history.
             </p>
           </div>
 
           {/* Auth coming soon notice */}
-          <div className="rounded-lg border border-gold/20 bg-gold-faint p-4 text-xs font-sans text-paper-muted text-center leading-relaxed">
+          <div
+            className="rounded-md p-4 text-xs font-sans text-ink-secondary text-center leading-relaxed"
+            style={{
+              background: 'var(--state-hover)',
+              border: '1px solid var(--border-hairline)',
+            }}
+          >
             Authentication requires Supabase configuration.
             <br />
             Connect your Supabase project to enable sign-in.
           </div>
 
-          <p className="text-center text-xs text-paper-faint font-sans">
+          <p className="text-center text-xs text-ink-muted font-sans">
             No account?{' '}
-            <Link href="/" className="text-gold hover:text-gold-bright transition-colors">
+            <Link href="/" className="text-accent-rust hover:text-ink-primary transition-colors">
               Explore without signing in
             </Link>
           </p>
         </div>
 
-        <p className="mt-6 text-center text-[0.65rem] text-paper-faint font-mono">
+        <p className="mt-6 text-center text-[0.65rem] text-ink-faint font-mono">
           Auth is optional — all content works without an account.
         </p>
       </div>

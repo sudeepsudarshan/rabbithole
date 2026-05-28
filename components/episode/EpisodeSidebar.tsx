@@ -1,11 +1,11 @@
 'use client';
-import { ArrowLeft, Check } from 'lucide-react';
-import Link from 'next/link';
+import { Check } from 'lucide-react';
 import { Episode } from '@/types/episode';
 import { cn } from '@/lib/utils';
 import Badge from '@/components/ui/Badge';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { getTemplateById } from '@/lib/templates';
+import BackLink from '@/components/nav/BackLink';
 
 interface EpisodeSidebarProps {
   episode: Episode;
@@ -24,15 +24,9 @@ export default function EpisodeSidebar({
   const progress = Math.round((completedChapters.length / episode.chapters.length) * 100);
 
   return (
-    <aside className="w-70 shrink-0 sticky top-14 h-[calc(100svh-56px)] overflow-y-auto hidden lg:flex flex-col border-r border-border p-5 gap-5">
+    <aside className="w-70 shrink-0 sticky top-14 h-[calc(100svh-56px)] overflow-y-auto hidden lg:flex flex-col border-r border-hairline p-5 gap-5">
       {/* Back */}
-      <Link
-        href="/episodes"
-        className="flex items-center gap-2 text-xs text-paper-faint hover:text-paper transition-colors font-sans"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        All episodes
-      </Link>
+      <BackLink fallback="/episodes" fallbackLabel="All episodes" />
 
       {/* Template badge */}
       {template && (
@@ -43,10 +37,10 @@ export default function EpisodeSidebar({
 
       {/* Episode info */}
       <div>
-        <h2 className="font-serif italic text-base text-paper leading-snug mb-1">
+        <h2 className="font-serif text-base text-ink-primary leading-snug mb-1">
           {episode.title}
         </h2>
-        <p className="font-mono text-[0.65rem] text-paper-faint">
+        <p className="font-mono text-[0.65rem] text-ink-muted">
           {episode.dateContext}
         </p>
       </div>
@@ -54,8 +48,8 @@ export default function EpisodeSidebar({
       {/* Progress */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <span className="font-mono text-[0.65rem] text-paper-faint">Progress</span>
-          <span className="font-mono text-[0.65rem] text-gold">{progress}%</span>
+          <span className="font-mono text-[0.65rem] text-ink-muted">Progress</span>
+          <span className="font-mono text-[0.65rem] text-accent-mustard">{progress}%</span>
         </div>
         <ProgressBar value={progress} size="md" />
       </div>
@@ -73,30 +67,30 @@ export default function EpisodeSidebar({
               className={cn(
                 'w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-md transition-all text-xs font-sans min-h-[44px]',
                 isActive
-                  ? 'bg-gold-faint text-gold'
+                  ? 'bg-[var(--state-hover)] text-accent-mustard border border-hairline'
                   : isCompleted
-                  ? 'text-paper-muted hover:bg-white/5 hover:text-paper'
-                  : 'text-paper-faint hover:bg-white/5 hover:text-paper-muted'
+                  ? 'text-ink-secondary hover:bg-[var(--state-hover)] hover:text-ink-primary'
+                  : 'text-ink-muted hover:bg-[var(--state-hover)] hover:text-ink-secondary'
               )}
             >
               <span
                 className={cn(
                   'mt-0.5 w-4 h-4 rounded-full border shrink-0 flex items-center justify-center transition-colors',
                   isActive
-                    ? 'border-gold bg-gold text-ink'
+                    ? 'border-accent-mustard bg-accent-mustard text-page'
                     : isCompleted
-                    ? 'border-paper-muted/50 bg-paper-muted/20'
-                    : 'border-border'
+                    ? 'border-ink-muted'
+                    : 'border-hairline'
                 )}
               >
                 {isActive ? (
-                  <span className="w-1.5 h-1.5 bg-ink rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-page rounded-full" />
                 ) : isCompleted ? (
-                  <Check className="w-2.5 h-2.5 text-paper-muted" />
+                  <Check className="w-2.5 h-2.5 text-ink-muted" />
                 ) : null}
               </span>
               <div>
-                <div className="font-mono text-[0.6rem] opacity-60 mb-0.5">
+                <div className="font-mono text-[0.6rem] text-ink-faint mb-0.5">
                   Ch. {chapter.number}
                 </div>
                 <div className="leading-tight">{chapter.title}</div>

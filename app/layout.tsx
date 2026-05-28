@@ -1,25 +1,30 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Inter, JetBrains_Mono } from 'next/font/google';
+import { Playfair_Display, Inter_Tight, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/nav/Sidebar';
 import ThemeProvider from '@/components/ui/ThemeProvider';
+import RouteTracker from '@/components/nav/RouteTracker';
 import Providers from './providers';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
+  weight: ['400', '500', '700'],
+  style: ['normal', 'italic'],
   display: 'swap',
 });
 
-const inter = Inter({
+const interTight = Inter_Tight({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-body',
+  weight: ['300', '400', '500', '600'],
   display: 'swap',
 });
 
 const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains',
+  weight: ['400', '500'],
   display: 'swap',
 });
 
@@ -44,8 +49,8 @@ export const metadata: Metadata = {
   viewport: {
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 1,          // prevent double-tap zoom on feed
-    viewportFit: 'cover',     // let content go under notch (we handle safe areas ourselves)
+    maximumScale: 1,
+    viewportFit: 'cover',
   },
 };
 
@@ -57,17 +62,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${jetbrains.variable}`}
+      className={`${playfair.variable} ${interTight.variable} ${jetbrains.variable}`}
       data-theme="dark"
     >
-      <body
-        className="antialiased overflow-hidden"
-        style={{ background: 'var(--background)', color: 'var(--foreground)' }}
-      >
+      <body className="antialiased overflow-hidden">
         <Providers>
           <ThemeProvider>
+            <RouteTracker />
             <Sidebar />
-            {/* overflow:auto lets inner pages scroll while feed is self-contained */}
             <main className="h-[100svh] overflow-y-auto">{children}</main>
           </ThemeProvider>
         </Providers>

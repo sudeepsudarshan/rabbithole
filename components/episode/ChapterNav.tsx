@@ -13,7 +13,10 @@ interface ChapterNavProps {
 
 export default function ChapterNav({ currentChapter, totalChapters, onPrev, onNext, className }: ChapterNavProps) {
   return (
-    <div className={cn('flex items-center justify-between py-6 border-t border-border', className)}>
+    <div
+      className={cn('flex items-center justify-between py-6', className)}
+      style={{ borderTop: '1px solid var(--border-hairline)' }}
+    >
       <Button
         variant="ghost"
         size="md"
@@ -24,7 +27,7 @@ export default function ChapterNav({ currentChapter, totalChapters, onPrev, onNe
         <ChevronLeft className="w-4 h-4" />
         Previous
       </Button>
-      <span className="font-mono text-[0.65rem] text-paper-faint">
+      <span className="font-mono text-[0.65rem] text-ink-muted">
         {currentChapter} / {totalChapters}
       </span>
       <Button

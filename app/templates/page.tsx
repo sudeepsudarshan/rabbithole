@@ -18,14 +18,14 @@ export default function TemplatesPage() {
       {/* Header */}
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="mb-2">
-          <span className="font-mono text-[0.65rem] text-gold uppercase tracking-widest">
+          <span className="font-mono text-[0.65rem] text-ink-muted tracking-widest">
             20 Templates
           </span>
         </div>
-        <h1 className="font-serif italic text-4xl text-paper mb-3">
+        <h1 className="font-serif text-4xl text-ink-primary mb-3">
           The Template Library
         </h1>
-        <p className="text-paper-faint text-sm font-sans max-w-xl leading-relaxed mb-8">
+        <p className="text-ink-muted text-sm font-sans max-w-xl leading-relaxed mb-8">
           Each template is a distinct conversational format with its own AI voice, rhythm, and emotional arc.
           Pick any topic, drop it in, and see where it goes.
         </p>

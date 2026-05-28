@@ -7,6 +7,7 @@ import { MessageCircle, ChevronDown } from 'lucide-react';
 import ChatMessage from '@/components/dive/ChatMessage';
 import ChatInput from '@/components/dive/ChatInput';
 import Badge from '@/components/ui/Badge';
+import BackLink from '@/components/nav/BackLink';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -91,31 +92,32 @@ export default function DivePageClient({ templates }: DivePageClientProps) {
   return (
     <div className="flex flex-col h-[calc(100svh-56px-64px)] md:h-[calc(100svh-56px)] max-w-3xl mx-auto px-4">
       {/* Header */}
-      <div className="py-5 border-b border-border">
+      <div className="py-5 border-b border-hairline">
+        <BackLink fallback="/" fallbackLabel="Home" className="mb-3 text-xs" />
         <div className="flex items-center gap-3 mb-3">
-          <MessageCircle className="w-4 h-4 text-gold" />
-          <h1 className="font-serif italic text-xl text-paper">Freeform Dive</h1>
+          <MessageCircle className="w-4 h-4 text-accent-rust" />
+          <h1 className="font-serif text-xl text-ink-primary">Freeform Dive</h1>
         </div>
 
         {/* Template selector */}
         <div className="relative">
           <button
             onClick={() => setSelectorOpen(!selectorOpen)}
-            className="flex items-center gap-2 text-sm font-sans text-paper-muted hover:text-paper transition-colors"
+            className="flex items-center gap-2 text-sm font-sans text-ink-secondary hover:text-ink-primary transition-colors"
           >
             <Badge variant="accent" accentColor={selectedTemplate.accentColor}>
               {selectedTemplate.name}
             </Badge>
             <ChevronDown
               className={cn(
-                'w-3.5 h-3.5 transition-transform',
+                'w-3.5 h-3.5 transition-transform text-ink-muted',
                 selectorOpen && 'rotate-180'
               )}
             />
           </button>
 
           {selectorOpen && (
-            <div className="absolute top-full left-0 mt-2 w-80 bg-ink-50 border border-border rounded-xl shadow-2xl z-50 overflow-hidden">
+            <div className="absolute top-full left-0 mt-2 w-80 bg-elevated border border-hairline rounded-xl z-50 overflow-hidden">
               <div className="p-2 max-h-80 overflow-y-auto space-y-1">
                 {templates.map(t => (
                   <button
@@ -126,10 +128,10 @@ export default function DivePageClient({ templates }: DivePageClientProps) {
                       setMessages([]);
                     }}
                     className={cn(
-                      'w-full text-left px-3 py-2.5 rounded-lg text-xs font-sans transition-all',
+                      'w-full text-left px-3 py-2.5 rounded-md text-xs font-sans transition-all',
                       t.id === selectedTemplate.id
-                        ? 'bg-gold-faint text-gold'
-                        : 'text-paper-muted hover:bg-white/5 hover:text-paper'
+                        ? 'bg-[var(--state-active)] text-ink-primary border border-hairline'
+                        : 'text-ink-secondary hover:bg-[var(--state-hover)] hover:text-ink-primary'
                     )}
                   >
                     <div className="flex items-center gap-2">
@@ -139,9 +141,9 @@ export default function DivePageClient({ templates }: DivePageClientProps) {
                       >
                         {t.id}
                       </span>
-                      <span className="font-serif italic">{t.name}</span>
+                      <span className="font-serif">{t.name}</span>
                     </div>
-                    <p className="text-paper-faint mt-0.5 text-[0.65rem] line-clamp-1 pl-6">
+                    <p className="text-ink-muted mt-0.5 text-[0.65rem] line-clamp-1 pl-6">
                       {t.tagline}
                     </p>
                   </button>
@@ -162,10 +164,10 @@ export default function DivePageClient({ templates }: DivePageClientProps) {
             >
               <MessageCircle className="w-6 h-6" style={{ color: selectedTemplate.accentColor }} />
             </div>
-            <h2 className="font-serif italic text-lg text-paper mb-2">
+            <h2 className="font-serif text-lg text-ink-primary mb-2">
               {selectedTemplate.name}
             </h2>
-            <p className="text-paper-faint text-sm font-sans max-w-xs leading-relaxed mb-6">
+            <p className="text-ink-muted text-sm font-sans max-w-xs leading-relaxed mb-6">
               {selectedTemplate.tagline}
             </p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -173,7 +175,7 @@ export default function DivePageClient({ templates }: DivePageClientProps) {
                 <button
                   key={topic}
                   onClick={() => handleSend(topic)}
-                  className="text-xs px-3 py-1.5 border border-border rounded-full text-paper-faint hover:text-paper hover:border-border-strong transition-all font-sans"
+                  className="text-xs px-3 py-1.5 border border-hairline rounded-full text-ink-muted hover:text-ink-primary hover:border-ink-line transition-all font-sans"
                 >
                   {topic}
                 </button>

@@ -10,18 +10,19 @@ interface InsightBoxProps {
 export default function InsightBox({ insight, className }: InsightBoxProps) {
   return (
     <div
-      className={cn(
-        'rounded-lg border border-gold/20 bg-gold-faint p-5',
-        className
-      )}
+      className={cn('rounded-lg border p-5', className)}
+      style={{
+        borderColor: 'var(--border-accent)',
+        background: 'var(--state-hover)',
+      }}
     >
       <div className="flex items-center gap-2 mb-3">
-        <Lightbulb className="w-4 h-4 text-gold shrink-0" />
-        <span className="font-mono text-[0.65rem] text-gold uppercase tracking-wide">
+        <Lightbulb className="w-4 h-4 text-accent-mustard shrink-0" />
+        <span className="font-mono text-[0.65rem] text-accent-mustard tracking-wide">
           {insight.label}
         </span>
       </div>
-      <p className="font-serif italic text-sm text-paper leading-relaxed">
+      <p className="font-serif italic text-sm text-ink-primary leading-relaxed">
         {insight.text}
       </p>
     </div>

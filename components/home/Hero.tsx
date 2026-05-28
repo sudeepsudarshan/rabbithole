@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from 'framer-motion';
-import { Sparkles, BookOpen, Rabbit } from 'lucide-react';
+import { Sparkles, BookOpen } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
 export default function Hero() {
@@ -14,44 +14,39 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[90svh] flex items-center justify-center overflow-hidden px-6 py-20">
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gold/5 rounded-full blur-[120px]" />
-      </div>
-
       <div className="relative max-w-4xl mx-auto text-center">
-        {/* Eyebrow */}
+        {/* Eyebrow — the editorial ornament */}
         <motion.div
           {...fadeUp}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0 }}
-          className="flex items-center justify-center gap-2 mb-8"
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0 }}
+          className="flex items-center justify-center gap-3 mb-10"
         >
-          <div className="h-px w-12 bg-gold/30" />
-          <span className="font-mono text-[0.72rem] text-gold uppercase tracking-widest">
-            AI Podcast Platform
+          <div className="h-px w-10 bg-[var(--ink-faint)]" />
+          <span className="font-mono text-[0.6875rem] text-ink-muted tracking-widest">
+            AI curiosity platform
           </span>
-          <div className="h-px w-12 bg-gold/30" />
+          <div className="h-px w-10 bg-[var(--ink-faint)]" />
         </motion.div>
 
-        {/* Main headline */}
+        {/* Main headline — upright Playfair, not italic */}
         <motion.h1
           {...fadeUp}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}
-          className="font-serif italic leading-none mb-6"
-          style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)' }}
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+          className="font-serif leading-none mb-6 text-ink-primary"
+          style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', letterSpacing: '-0.02em' }}
         >
-          <span className="text-paper">Down the</span>
+          Down the
           <br />
-          <span className="text-gold-gradient">Rabbit Hole</span>
+          <span style={{ color: 'var(--accent-rust)' }}>Rabbit Hole</span>
           <br />
-          <span className="text-paper font-normal">with AI</span>
+          with AI
         </motion.h1>
 
         {/* Subtitle */}
         <motion.p
           {...fadeUp}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}
-          className="font-sans text-lg text-paper-muted max-w-xl mx-auto mb-10 leading-relaxed"
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.2 }}
+          className="font-sans text-lg text-ink-secondary max-w-xl mx-auto mb-10 leading-relaxed"
         >
           Start with any question. Go somewhere you never expected.
           A curiosity-driven podcast where every conversation digs deeper.
@@ -60,8 +55,8 @@ export default function Hero() {
         {/* CTAs */}
         <motion.div
           {...fadeUp}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14"
         >
           <Link href="/sparks">
             <Button variant="primary" size="lg" className="gap-2.5 w-full sm:w-auto">
@@ -71,26 +66,30 @@ export default function Hero() {
           </Link>
           <Link href="/templates">
             <Button variant="ghost" size="lg" className="gap-2.5 w-full sm:w-auto">
+              <BookOpen className="w-4 h-4" />
               Browse Templates
             </Button>
           </Link>
         </motion.div>
 
-        {/* Stats */}
+        {/* Stats — chapter ornament style */}
         <motion.div
           {...fadeUp}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.4 }}
-          className="flex items-center justify-center gap-8 md:gap-12"
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.4 }}
+          className="flex items-center justify-center gap-10 md:gap-16"
         >
           {[
             { value: '20', label: 'Templates' },
             { value: '3', label: 'Formats' },
             { value: '∞', label: 'Rabbit Holes' },
-          ].map(({ value, label }) => (
-            <div key={label} className="text-center">
-              <div className="font-serif text-2xl text-gold mb-0.5">{value}</div>
-              <div className="font-mono text-[0.65rem] text-paper-faint uppercase tracking-wide">{label}</div>
-            </div>
+          ].map(({ value, label }, i) => (
+            <>
+              {i > 0 && <div key={`divider-${i}`} className="h-6 w-px bg-[var(--border-hairline)]" />}
+              <div key={label} className="text-center">
+                <div className="font-serif text-2xl text-accent-rust mb-0.5">{value}</div>
+                <div className="font-mono text-[0.6875rem] text-ink-muted tracking-wide">{label}</div>
+              </div>
+            </>
           ))}
         </motion.div>
       </div>

@@ -11,6 +11,7 @@ import EpisodeSidebar from '@/components/episode/EpisodeSidebar';
 import ChapterContent from '@/components/episode/ChapterContent';
 import Badge from '@/components/ui/Badge';
 import ProgressBar from '@/components/ui/ProgressBar';
+import BackLink from '@/components/nav/BackLink';
 
 interface EpisodePageClientProps {
   episode: Episode;
@@ -70,20 +71,23 @@ export default function EpisodePageClient({
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        {/* Mobile chapter strip */}
-        <div className="lg:hidden border-b border-border bg-ink/90 sticky top-14 z-30">
+        {/* Mobile back + chapter strip */}
+        <div className="lg:hidden border-b border-hairline bg-page/90 sticky top-14 z-30">
+          <div className="px-4 pt-2">
+            <BackLink fallback="/episodes" fallbackLabel="All episodes" className="text-xs" />
+          </div>
           <div className="flex gap-1 px-4 py-2 overflow-x-auto scrollbar-hide">
             {episode.chapters.map(ch => (
               <button
                 key={ch.id}
                 onClick={() => goToChapter(ch.number)}
                 className={`
-                  shrink-0 px-3 py-1.5 rounded-full text-xs font-mono transition-all whitespace-nowrap
+                  shrink-0 px-3 py-1.5 rounded-full text-xs font-mono transition-colors whitespace-nowrap
                   ${ch.number === currentChapterNum
-                    ? 'bg-gold text-ink'
+                    ? 'bg-accent-rust text-elevated'
                     : progress.completedChapters.includes(ch.number)
-                    ? 'bg-white/10 text-paper-muted'
-                    : 'bg-transparent text-paper-faint border border-border'
+                    ? 'text-ink-secondary border border-hairline'
+                    : 'bg-transparent text-ink-muted border border-hairline'
                   }
                 `}
               >
