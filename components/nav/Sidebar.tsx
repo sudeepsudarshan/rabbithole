@@ -26,28 +26,30 @@ const NAV_LINKS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { sidebarOpen, setSidebarOpen, theme, toggleTheme } = useUIStore();
+  const { sidebarOpen, setSidebarOpen, theme, toggleTheme, sparkPanelOpen } = useUIStore();
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
 
   return (
     <>
-      {/* Floating rabbit button — top-left, respects iOS notch */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className={cn(
-          'fixed left-4 z-50 w-11 h-11 rounded-full',
-          'bg-[var(--bg-elevated)] border border-hairline hover:border-ink-line',
-          'flex items-center justify-center',
-          'transition-colors duration-150',
-          'group'
-        )}
-        style={{ top: 'max(16px, env(safe-area-inset-top) + 8px)' }}
-        aria-label="Open navigation"
-      >
-        <Rabbit className="w-4 h-4 text-accent-rust" />
-      </button>
+      {/* Floating rabbit button — hidden when SparkPanel is open to prevent overlap */}
+      {!sparkPanelOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className={cn(
+            'fixed left-4 z-50 w-11 h-11 rounded-full',
+            'bg-[var(--bg-elevated)] border border-hairline hover:border-ink-line',
+            'flex items-center justify-center',
+            'transition-colors duration-150',
+            'group'
+          )}
+          style={{ top: 'max(16px, env(safe-area-inset-top) + 8px)' }}
+          aria-label="Open navigation"
+        >
+          <Rabbit className="w-4 h-4 text-accent-rust" />
+        </button>
+      )}
 
       <AnimatePresence>
         {sidebarOpen && (
