@@ -102,7 +102,7 @@ function DeeperTab({ spark }: { spark: SparkCard }) {
             >
               {persona.name.charAt(0)}
             </span>
-            <span className="text-[0.6rem] font-mono text-white/40 uppercase tracking-wider">
+            <span className="text-[0.6rem] font-mono uppercase tracking-wider" style={{ color: 'var(--ink-muted)' }}>
               {persona.name} · {persona.oneLiner}
             </span>
           </span>
@@ -110,21 +110,21 @@ function DeeperTab({ spark }: { spark: SparkCard }) {
       </div>
 
       {/* Title */}
-      <h2 className="font-serif italic text-[1.2rem] leading-snug text-white">
+      <h2 className="font-serif italic text-[1.2rem] leading-snug text-[var(--ink-primary)]">
         {spark.title}
       </h2>
 
       {/* Full answer */}
-      <p className="text-[0.88rem] text-white/80 font-serif italic leading-relaxed">
+      <p className="text-[0.88rem] font-serif italic leading-relaxed text-[var(--ink-secondary)]">
         {spark.answer}
       </p>
 
       {/* Divider */}
-      <div className="border-t border-white/8" />
+      <div className="border-t border-[var(--border-hairline)]" />
 
       {/* Hook line pull-quote */}
       <blockquote className="pl-3 border-l-2" style={{ borderColor: spark.accentColor }}>
-        <p className="text-[0.8rem] text-white/55 italic font-serif leading-relaxed">
+        <p className="text-[0.8rem] italic font-serif leading-relaxed text-[var(--ink-secondary)]">
           &ldquo;{spark.hookLine}&rdquo;
         </p>
       </blockquote>
@@ -184,7 +184,7 @@ function AskTab({
           question: q,
           sparkTitle: spark.title,
           sparkAnswer: spark.answer,
-          history: state.messages, // history before this question
+          history: state.messages,
         }),
       });
 
@@ -227,11 +227,12 @@ function AskTab({
       {/* Conversation thread */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
         {/* Spark context strip */}
-        <div className="rounded-xl px-4 py-3 border border-white/8 bg-white/4 mb-4">
+        <div className="rounded-xl px-4 py-3 mb-4"
+          style={{ border: '1px solid var(--border-hairline)', background: 'var(--state-hover)' }}>
           <p className="text-[0.6rem] font-mono uppercase tracking-wider mb-1" style={{ color: spark.accentColor }}>
             Exploring
           </p>
-          <p className="text-[0.78rem] text-white/65 font-serif italic leading-snug line-clamp-2">
+          <p className="text-[0.78rem] font-serif italic leading-snug line-clamp-2 text-[var(--ink-secondary)]">
             {spark.title}
           </p>
         </div>
@@ -239,7 +240,7 @@ function AskTab({
         {/* Suggested questions — shown when thread is empty */}
         {!hasMessages && (
           <div className="space-y-2">
-            <p className="text-[0.6rem] font-mono uppercase tracking-wider text-white/35 px-1">
+            <p className="text-[0.6rem] font-mono uppercase tracking-wider px-1 text-[var(--ink-faint)]">
               Start here
             </p>
             {spark.suggestedQuestions.map((q, i) => (
@@ -249,7 +250,20 @@ function AskTab({
                   onStateChange({ inputDraft: q });
                   setTimeout(() => inputRef.current?.focus(), 50);
                 }}
-                className="w-full text-left px-4 py-3 rounded-xl border border-white/10 bg-white/4 text-[0.8rem] text-white/65 hover:text-white hover:bg-white/8 transition-all active:scale-98 leading-snug"
+                className="w-full text-left px-4 py-3 rounded-xl text-[0.8rem] leading-snug transition-all active:scale-[0.98]"
+                style={{
+                  border: '1px solid var(--border-hairline)',
+                  background: 'var(--state-hover)',
+                  color: 'var(--ink-secondary)',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--state-active)';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--ink-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--state-hover)';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--ink-secondary)';
+                }}
               >
                 {q}
               </button>
@@ -267,16 +281,24 @@ function AskTab({
                 className={cn(
                   'max-w-[88%] px-4 py-3 rounded-2xl text-[0.83rem] leading-relaxed',
                   isUser
-                    ? 'rounded-br-sm text-white font-sans'
-                    : 'rounded-bl-sm font-serif italic text-white/85'
+                    ? 'rounded-br-sm font-sans'
+                    : 'rounded-bl-sm font-serif italic'
                 )}
                 style={
                   isUser
-                    ? { background: spark.accentColor + '28', border: `1px solid ${spark.accentColor}40` }
-                    : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }
+                    ? {
+                        background: spark.accentColor + '28',
+                        border: `1px solid ${spark.accentColor}40`,
+                        color: 'var(--ink-primary)',
+                      }
+                    : {
+                        background: 'var(--state-hover)',
+                        border: '1px solid var(--border-hairline)',
+                        color: 'var(--ink-primary)',
+                      }
                 }
               >
-                {msg.content || (isLastAI && <span className="text-white/30">…</span>)}
+                {msg.content || (isLastAI && <span style={{ color: 'var(--ink-faint)' }}>…</span>)}
                 {isLastAI && msg.content && (
                   <span className="streaming-cursor" aria-hidden="true" />
                 )}
@@ -288,7 +310,8 @@ function AskTab({
       </div>
 
       {/* Input bar */}
-      <div className="px-4 py-3 border-t border-white/8 flex gap-2 items-center flex-shrink-0">
+      <div className="px-4 py-3 flex gap-2 items-center flex-shrink-0"
+        style={{ borderTop: '1px solid var(--border-hairline)' }}>
         <input
           ref={inputRef}
           type="text"
@@ -303,7 +326,12 @@ function AskTab({
           placeholder="Ask anything about this…"
           maxLength={500}
           disabled={state.streaming}
-          className="flex-1 bg-white/6 border border-white/10 rounded-xl px-4 py-2.5 text-[0.83rem] text-white placeholder:text-white/30 focus:outline-none focus:border-white/25 transition-colors"
+          className="flex-1 rounded-xl px-4 py-2.5 text-[0.83rem] focus:outline-none transition-colors"
+          style={{
+            background: 'var(--bg-input)',
+            border: '1px solid var(--border-hairline)',
+            color: 'var(--ink-primary)',
+          }}
         />
         <button
           onClick={handleSubmit}
@@ -311,12 +339,12 @@ function AskTab({
           className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all disabled:opacity-40"
           style={state.inputDraft.trim() && !state.streaming
             ? { background: spark.accentColor }
-            : { background: 'rgba(255,255,255,0.08)' }
+            : { background: 'var(--state-hover)', border: '1px solid var(--border-hairline)' }
           }
         >
           {state.streaming
-            ? <Loader2 className="w-4 h-4 text-white animate-spin" />
-            : <Send className="w-4 h-4 text-white" />
+            ? <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--ink-muted)' }} />
+            : <Send className="w-4 h-4" style={{ color: state.inputDraft.trim() ? '#000' : 'var(--ink-muted)' }} />
           }
         </button>
       </div>
@@ -382,15 +410,20 @@ function PodcastTab({
     <div className="flex flex-col h-full">
       {/* Hosts strip */}
       {state.turns.length > 0 && (
-        <div className="flex gap-4 px-5 py-3 border-b border-white/8 flex-shrink-0">
+        <div className="flex gap-4 px-5 py-3 flex-shrink-0"
+          style={{ borderBottom: '1px solid var(--border-hairline)' }}>
           {(['Jay', 'Maya'] as const).map((host) => (
             <div key={host} className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-white/8 border border-white/15 flex items-center justify-center text-sm">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                style={{ background: 'var(--state-hover)', border: '1px solid var(--border-hairline)' }}>
                 {HOST_STYLE[host].emoji}
               </div>
               <div>
-                <p className="text-[0.58rem] font-mono uppercase tracking-wider text-white/50 leading-none">{host}</p>
-                <p className="text-[0.58rem] text-white/30 leading-none">{HOST_STYLE[host].role}</p>
+                <p className="text-[0.58rem] font-mono uppercase tracking-wider leading-none"
+                  style={{ color: 'var(--ink-muted)' }}>{host}</p>
+                <p className="text-[0.58rem] leading-none" style={{ color: 'var(--ink-faint)' }}>
+                  {HOST_STYLE[host].role}
+                </p>
               </div>
             </div>
           ))}
@@ -401,16 +434,17 @@ function PodcastTab({
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
         {state.loading && (
           <div className="flex flex-col items-center gap-3 py-16">
-            <Loader2 className="w-6 h-6 text-white/40 animate-spin" />
-            <p className="text-sm text-white/40 font-serif italic">Generating episode…</p>
+            <Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--ink-muted)' }} />
+            <p className="text-sm font-serif italic" style={{ color: 'var(--ink-muted)' }}>Generating episode…</p>
           </div>
         )}
         {state.error && (
           <div className="flex flex-col items-center gap-3 py-16">
-            <p className="text-sm text-white/50 text-center">{state.error}</p>
+            <p className="text-sm text-center" style={{ color: 'var(--ink-secondary)' }}>{state.error}</p>
             <button
               onClick={fetchPodcast}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-white/60 text-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm"
+              style={{ border: '1px solid var(--border-hairline)', color: 'var(--ink-secondary)' }}
             >
               <RotateCcw className="w-3.5 h-3.5" /> Try again
             </button>
@@ -427,7 +461,8 @@ function PodcastTab({
                 transition={{ duration: 0.3 }}
                 className={cn('flex gap-2.5', isJay ? 'flex-row' : 'flex-row-reverse')}
               >
-                <div className="w-7 h-7 rounded-full bg-white/8 border border-white/15 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm flex-shrink-0 mt-0.5"
+                  style={{ background: 'var(--state-hover)', border: '1px solid var(--border-hairline)' }}>
                   {HOST_STYLE[turn.host].emoji}
                 </div>
                 <div
@@ -445,7 +480,8 @@ function PodcastTab({
                     style={{ color: isJay ? '#C9A84C' : spark.accentColor }}>
                     {turn.host}
                   </p>
-                  <p className="text-[0.83rem] font-serif italic text-white/85 leading-relaxed">
+                  <p className="text-[0.83rem] font-serif italic leading-relaxed"
+                    style={{ color: 'var(--ink-primary)' }}>
                     {turn.text}
                   </p>
                 </div>
@@ -457,8 +493,10 @@ function PodcastTab({
 
       {/* Controls */}
       {state.turns.length > 0 && (
-        <div className="px-5 py-3 border-t border-white/8 flex items-center gap-3 flex-shrink-0">
-          <div className="flex-1 h-0.5 bg-white/10 rounded-full overflow-hidden">
+        <div className="px-5 py-3 flex items-center gap-3 flex-shrink-0"
+          style={{ borderTop: '1px solid var(--border-hairline)' }}>
+          <div className="flex-1 h-0.5 rounded-full overflow-hidden"
+            style={{ background: 'var(--border-hairline)' }}>
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -467,7 +505,9 @@ function PodcastTab({
               }}
             />
           </div>
-          <span className="font-mono text-[0.58rem] text-white/35">{state.visibleCount}/{state.turns.length}</span>
+          <span className="font-mono text-[0.58rem]" style={{ color: 'var(--ink-faint)' }}>
+            {state.visibleCount}/{state.turns.length}
+          </span>
           {state.visibleCount < state.turns.length ? (
             <button
               onClick={() => onStateChange({ visibleCount: state.visibleCount + 1 })}
@@ -479,7 +519,8 @@ function PodcastTab({
           ) : (
             <button
               onClick={fetchPodcast}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/20 text-white/60 text-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs"
+              style={{ border: '1px solid var(--border-hairline)', color: 'var(--ink-secondary)' }}
             >
               <SkipForward className="w-3 h-3" /> New ep
             </button>
@@ -528,7 +569,6 @@ export default function SparkPanel({
   useEffect(() => {
     if (open && spark) {
       const s = getState();
-      // Override activeTab if the caller wants a specific one
       const updated = { ...s, activeTab: initialTab };
       panelCache.current.set(spark.id, updated);
       setLocalState(updated);
@@ -572,7 +612,8 @@ export default function SparkPanel({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] backdrop-blur-sm"
+            style={{ background: 'var(--bg-overlay)' }}
             onClick={onClose}
           />
 
@@ -583,8 +624,10 @@ export default function SparkPanel({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 32 }}
-            className="fixed inset-x-0 bottom-0 z-[61] flex flex-col bg-[#0d0d0d] border-t border-white/10 rounded-t-3xl overflow-hidden"
+            className="fixed inset-x-0 bottom-0 z-[61] flex flex-col rounded-t-3xl overflow-hidden"
             style={{
+              background: 'var(--bg-elevated)',
+              borderTop: '1px solid var(--border-hairline)',
               height: '88vh',
               paddingBottom: 'env(safe-area-inset-bottom)',
             }}
@@ -592,26 +635,32 @@ export default function SparkPanel({
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full bg-white/20" />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'var(--ink-faint)' }} />
             </div>
 
             {/* Top bar: close + spark title */}
             <div className="flex items-center gap-3 px-4 pt-1 pb-3 flex-shrink-0">
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-white/8 border border-white/12 flex items-center justify-center flex-shrink-0 transition-all active:scale-90"
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all active:scale-90"
+                style={{
+                  background: 'var(--state-hover)',
+                  border: '1px solid var(--border-hairline)',
+                }}
                 aria-label="Back to spark"
               >
-                <X className="w-3.5 h-3.5 text-white/60" />
+                <X className="w-3.5 h-3.5" style={{ color: 'var(--ink-secondary)' }} />
               </button>
-              <p className="font-serif italic text-[0.82rem] text-white/60 leading-snug line-clamp-1 flex-1">
+              <p className="font-serif italic text-[0.82rem] leading-snug line-clamp-1 flex-1"
+                style={{ color: 'var(--ink-secondary)' }}>
                 {spark.title}
               </p>
-              <ChevronRight className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+              <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--ink-faint)' }} />
             </div>
 
             {/* Tab bar */}
-            <div className="flex border-b border-white/8 flex-shrink-0 px-4">
+            <div className="flex flex-shrink-0 px-4"
+              style={{ borderBottom: '1px solid var(--border-hairline)' }}>
               {TABS.map(({ id, icon: Icon, label }) => {
                 const isActive = localState.activeTab === id;
                 return (
@@ -622,11 +671,11 @@ export default function SparkPanel({
                   >
                     <Icon
                       className="w-4 h-4"
-                      style={{ color: isActive ? spark.accentColor : 'rgba(255,255,255,0.3)' }}
+                      style={{ color: isActive ? spark.accentColor : 'var(--ink-muted)' }}
                     />
                     <span
                       className="text-[0.58rem] font-mono uppercase tracking-wider"
-                      style={{ color: isActive ? spark.accentColor : 'rgba(255,255,255,0.3)' }}
+                      style={{ color: isActive ? spark.accentColor : 'var(--ink-muted)' }}
                     >
                       {label}
                     </span>

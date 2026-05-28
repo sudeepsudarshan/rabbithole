@@ -65,6 +65,10 @@ export default function RootLayout({
       className={`${playfair.variable} ${interTight.variable} ${jetbrains.variable}`}
       data-theme="dark"
     >
+      <head>
+        {/* Prevent dark→light flash for users with saved light theme */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var s=JSON.parse(localStorage.getItem('rh-ui')||'{}');if(s&&s.state&&s.state.theme)document.documentElement.setAttribute('data-theme',s.state.theme);}catch(e){}` }} />
+      </head>
       <body className="antialiased overflow-hidden">
         <Providers>
           <ThemeProvider>

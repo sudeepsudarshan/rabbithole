@@ -126,7 +126,7 @@ export default function SparkFeed({
   return (
     <>
       <div
-        className="relative h-[100svh] w-full overflow-hidden bg-black touch-none"
+        className="relative h-[100svh] w-full overflow-hidden bg-page touch-none"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         onWheel={handleWheel}
@@ -139,7 +139,8 @@ export default function SparkFeed({
             initial="enter"
             animate="center"
             exit="exit"
-            className="absolute inset-0"
+            className="absolute inset-2 rounded-2xl overflow-hidden"
+            style={{ border: '1px solid var(--border-ink)' }}
           >
             <SparkCard
               spark={spark}
