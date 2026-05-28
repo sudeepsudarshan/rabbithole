@@ -106,11 +106,11 @@ export default function DiveWindow({ episode, chapter, templateId, defaultOpen =
         <div className="flex items-center gap-2.5">
           <MessageCircle className="w-4 h-4 text-accent-rust" />
           <span className="font-serif text-sm text-ink-primary group-hover:text-accent-rust transition-colors">
-            Dive deeper with AI
+            Ask the AI
           </span>
           {chapter && (
             <span className="font-mono text-[0.65rem] text-ink-muted">
-              — {chapter.title}
+              · {chapter.title}
             </span>
           )}
         </div>
@@ -148,9 +148,31 @@ export default function DiveWindow({ episode, chapter, templateId, defaultOpen =
                 )}
 
                 {visibleMessages.length === 0 && (
-                  <p className="text-xs text-ink-muted text-center py-4 font-serif italic">
-                    Ask anything about this chapter…
-                  </p>
+                  <div className="py-3 space-y-3">
+                    <p className="text-xs text-ink-muted font-serif italic">
+                      Ask anything about this story, or let the AI suggest new threads to pull.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        'What\'s the real story behind this?',
+                        'What happened next?',
+                        'Why does this matter today?',
+                      ].map((q) => (
+                        <button
+                          key={q}
+                          onClick={() => handleSend(q)}
+                          className="px-3 py-1.5 rounded-full text-[0.72rem] font-sans border transition-colors hover:bg-[var(--state-hover)] hover:border-[var(--border-ink)]"
+                          style={{
+                            borderColor: 'var(--border-hairline)',
+                            color: 'var(--ink-secondary)',
+                            background: 'var(--bg-elevated)',
+                          }}
+                        >
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {visibleMessages.map((message, i) => (

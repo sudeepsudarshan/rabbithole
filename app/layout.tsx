@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Playfair_Display, Inter_Tight, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/nav/Sidebar';
+import BottomNav from '@/components/nav/BottomNav';
 import ThemeProvider from '@/components/ui/ThemeProvider';
 import RouteTracker from '@/components/nav/RouteTracker';
 import Providers from './providers';
@@ -74,6 +75,7 @@ export default function RootLayout({
           <ThemeProvider>
             <RouteTracker />
             <Sidebar />
+            <BottomNav />
             <main className="h-[100svh] overflow-y-auto">{children}</main>
           </ThemeProvider>
         </Providers>

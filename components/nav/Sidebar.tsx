@@ -16,7 +16,8 @@ import { cn } from '@/lib/utils';
 import { useUIStore } from '@/store/uiStore';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Sparks', icon: Sparkles, exact: true },
+  { href: '/', label: 'Home', icon: Sparkles, exact: true },
+  { href: '/sparks', label: 'Sparks', icon: Sparkles, exact: false },
   { href: '/templates', label: 'Templates', icon: LayoutGrid, exact: false },
   { href: '/episodes', label: 'Episodes', icon: BookOpen, exact: false },
   { href: '/dive', label: 'Dive', icon: MessageCircle, exact: false },
@@ -180,8 +181,8 @@ export default function Sidebar() {
                   </span>
                 </button>
 
-                <p className="font-mono text-[0.6rem] text-ink-faint">
-                  Down the Rabbit Hole · v0.1
+                <p className="font-serif italic text-[0.62rem] text-ink-faint leading-snug">
+                  &ldquo;Start with any question. End somewhere completely unexpected.&rdquo;
                 </p>
               </div>
             </motion.aside>
