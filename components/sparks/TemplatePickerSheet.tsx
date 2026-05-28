@@ -57,8 +57,6 @@ export default function TemplatePickerSheet({
   );
 
   const handleRowTap = (id: string) => {
-    // First tap on collapsed = expand to show description
-    // Second tap (or tap on already-expanded) = select/deselect
     if (expandedId !== id) {
       setExpandedId(id);
     } else {
@@ -77,7 +75,8 @@ export default function TemplatePickerSheet({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] backdrop-blur-sm"
+            style={{ background: 'var(--bg-overlay)' }}
             onClick={onClose}
           />
 
@@ -88,27 +87,33 @@ export default function TemplatePickerSheet({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-            className="fixed inset-x-0 bottom-0 z-[71] bg-[#0e0e0e] border-t border-white/10 rounded-t-3xl overflow-hidden"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom)', maxHeight: '88vh' }}
+            className="fixed inset-x-0 bottom-0 z-[71] rounded-t-3xl overflow-hidden"
+            style={{
+              background: 'var(--bg-elevated)',
+              borderTop: '1px solid var(--border-hairline)',
+              paddingBottom: 'env(safe-area-inset-bottom)',
+              maxHeight: '88vh',
+            }}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full bg-white/20" />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'var(--ink-faint)' }} />
             </div>
 
             {/* Header */}
             <div className="flex items-center justify-between px-5 pt-2 pb-3 flex-shrink-0">
               <div>
-                <h2 className="font-serif italic text-white text-base leading-snug">
+                <h2 className="font-serif italic text-base leading-snug" style={{ color: 'var(--ink-primary)' }}>
                   Filter by template
                 </h2>
-                <p className="text-white/40 text-[0.65rem] font-mono mt-0.5">
+                <p className="text-[0.65rem] font-mono mt-0.5" style={{ color: 'var(--ink-muted)' }}>
                   {allSelected ? 'Showing all · randomised' : `${selectedIds.length} selected · tap again to toggle`}
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-white/40 hover:text-white transition-colors"
+                className="p-2 transition-colors"
+                style={{ color: 'var(--ink-muted)' }}
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -124,8 +129,13 @@ export default function TemplatePickerSheet({
                     'w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all',
                     allSelected
                       ? 'bg-gold/15 border-gold/40 text-gold'
-                      : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
+                      : ''
                   )}
+                  style={!allSelected ? {
+                    background: 'var(--state-hover)',
+                    borderColor: 'var(--border-hairline)',
+                    color: 'var(--ink-secondary)',
+                  } : undefined}
                 >
                   <Shuffle className="w-4 h-4 flex-shrink-0" />
                   <span className="text-sm font-medium flex-1 text-left">All templates · randomised</span>
@@ -133,7 +143,7 @@ export default function TemplatePickerSheet({
                 </button>
               </div>
 
-              <div className="mx-5 border-t border-white/8 mb-2" />
+              <div className="mx-5 mb-2" style={{ borderTop: '1px solid var(--border-hairline)' }} />
 
               {/* Template list — full width with expandable descriptions */}
               <div className="px-4 pb-6 space-y-1.5">
@@ -148,7 +158,7 @@ export default function TemplatePickerSheet({
                       style={
                         isActive
                           ? { borderColor: `${t.accentColor}55`, background: `${t.accentColor}12` }
-                          : { borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)' }
+                          : { borderColor: 'var(--border-hairline)', background: 'var(--state-hover)' }
                       }
                     >
                       {/* Row header — tap to expand/select */}
@@ -158,11 +168,11 @@ export default function TemplatePickerSheet({
                       >
                         <span
                           className="w-2.5 h-2.5 rounded-full flex-shrink-0 transition-colors"
-                          style={{ background: isActive ? t.accentColor : 'rgba(255,255,255,0.25)' }}
+                          style={{ background: isActive ? t.accentColor : 'var(--ink-faint)' }}
                         />
                         <span
                           className="text-[0.82rem] font-semibold flex-1 transition-colors"
-                          style={{ color: isActive ? t.accentColor : 'rgba(255,255,255,0.75)' }}
+                          style={{ color: isActive ? t.accentColor : 'var(--ink-primary)' }}
                         >
                           {t.name}
                         </span>
@@ -174,7 +184,7 @@ export default function TemplatePickerSheet({
                             animate={{ rotate: isExpanded ? 180 : 0 }}
                             transition={{ duration: 0.18 }}
                           >
-                            <ChevronDown className="w-3.5 h-3.5 text-white/30" />
+                            <ChevronDown className="w-3.5 h-3.5" style={{ color: 'var(--ink-faint)' }} />
                           </motion.div>
                         </div>
                       </button>
@@ -190,8 +200,10 @@ export default function TemplatePickerSheet({
                             transition={{ duration: 0.22, ease: 'easeInOut' }}
                             className="overflow-hidden"
                           >
-                            <div className="px-4 pb-3 pt-0 border-t border-white/6">
-                              <p className="text-[0.73rem] text-white/50 font-sans leading-relaxed pt-2.5 mb-3">
+                            <div className="px-4 pb-3 pt-0"
+                              style={{ borderTop: '1px solid var(--border-hairline)' }}>
+                              <p className="text-[0.73rem] font-sans leading-relaxed pt-2.5 mb-3"
+                                style={{ color: 'var(--ink-muted)' }}>
                                 {t.description}
                               </p>
                               <button
@@ -200,7 +212,7 @@ export default function TemplatePickerSheet({
                                 style={
                                   isActive
                                     ? { color: t.accentColor, borderColor: `${t.accentColor}40`, background: `${t.accentColor}15` }
-                                    : { color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.15)', background: 'transparent' }
+                                    : { color: 'var(--ink-secondary)', borderColor: 'var(--border-hairline)', background: 'transparent' }
                                 }
                               >
                                 {isActive ? '✓ Selected — tap to remove' : 'Add to filter'}
