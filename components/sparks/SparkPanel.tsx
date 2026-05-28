@@ -21,6 +21,7 @@ import {
   ChevronRight,
   ArrowUpRight,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { SparkCard } from '@/types/spark';
 import { cn } from '@/lib/utils';
@@ -81,64 +82,82 @@ function DeeperTab({ spark }: { spark: SparkCard }) {
   const persona = getPersonaForTemplate(spark.templateId);
 
   return (
-    <div className="px-5 py-5 space-y-5">
-      {/* Template badge + host */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <span
-          className="inline-flex items-center px-2.5 py-1 rounded-full text-[0.6rem] font-mono uppercase tracking-wider border"
-          style={{
-            color: spark.accentColor,
-            borderColor: `${spark.accentColor}50`,
-            background: `${spark.accentColor}15`,
-          }}
-        >
-          {spark.templateLabel}
-        </span>
-        {persona && (
-          <span className="flex items-center gap-1.5">
-            <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-[0.55rem] font-bold flex-shrink-0"
-              style={{ background: `${spark.accentColor}25`, color: spark.accentColor }}
-            >
-              {persona.name.charAt(0)}
-            </span>
-            <span className="text-[0.6rem] font-mono uppercase tracking-wider" style={{ color: 'var(--ink-muted)' }}>
-              {persona.name} · {persona.oneLiner}
-            </span>
-          </span>
-        )}
+    <div className="flex flex-col">
+      {/* Hero image — article-style at the top */}
+      <div className="relative w-full flex-shrink-0" style={{ height: '200px' }}>
+        <Image
+          src={spark.heroImage}
+          alt=""
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div
+          className="absolute bottom-0 inset-x-0 h-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, var(--bg-elevated), transparent)' }}
+        />
       </div>
 
-      {/* Title */}
-      <h2 className="font-serif italic text-[1.2rem] leading-snug text-[var(--ink-primary)]">
-        {spark.title}
-      </h2>
-
-      {/* Full answer */}
-      <p className="text-[0.88rem] font-serif italic leading-relaxed text-[var(--ink-secondary)]">
-        {spark.answer}
-      </p>
-
-      {/* Divider */}
-      <div className="border-t border-[var(--border-hairline)]" />
-
-      {/* Hook line pull-quote */}
-      <blockquote className="pl-3 border-l-2" style={{ borderColor: spark.accentColor }}>
-        <p className="text-[0.8rem] italic font-serif leading-relaxed text-[var(--ink-secondary)]">
-          &ldquo;{spark.hookLine}&rdquo;
-        </p>
-      </blockquote>
-
-      {/* CTA */}
-      <Link href={href}>
-        <div
-          className="flex items-center gap-2.5 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all active:scale-95"
-          style={{ background: spark.accentColor, color: '#000' }}
-        >
-          <ArrowUpRight className="w-4 h-4" />
-          {label}
+      {/* Article content */}
+      <div className="px-5 pt-3 pb-6 space-y-4">
+        {/* Template badge + host */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span
+            className="inline-flex items-center px-2.5 py-1 rounded-full text-[0.6rem] font-mono uppercase tracking-wider border"
+            style={{
+              color: spark.accentColor,
+              borderColor: `${spark.accentColor}50`,
+              background: `${spark.accentColor}15`,
+            }}
+          >
+            {spark.templateLabel}
+          </span>
+          {persona && (
+            <span className="flex items-center gap-1.5">
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[0.55rem] font-bold flex-shrink-0"
+                style={{ background: `${spark.accentColor}25`, color: spark.accentColor }}
+              >
+                {persona.name.charAt(0)}
+              </span>
+              <span className="text-[0.6rem] font-mono uppercase tracking-wider" style={{ color: 'var(--ink-muted)' }}>
+                {persona.name} · {persona.oneLiner}
+              </span>
+            </span>
+          )}
         </div>
-      </Link>
+
+        {/* Title */}
+        <h2 className="font-serif text-[1.25rem] leading-snug" style={{ color: 'var(--ink-primary)' }}>
+          {spark.title}
+        </h2>
+
+        {/* Full answer */}
+        <p className="text-[0.88rem] font-serif italic leading-relaxed" style={{ color: 'var(--ink-secondary)' }}>
+          {spark.answer}
+        </p>
+
+        {/* Divider */}
+        <div className="border-t border-[var(--border-hairline)]" />
+
+        {/* Hook line pull-quote */}
+        <blockquote className="pl-3 border-l-2" style={{ borderColor: spark.accentColor }}>
+          <p className="text-[0.8rem] italic font-serif leading-relaxed" style={{ color: 'var(--ink-secondary)' }}>
+            &ldquo;{spark.hookLine}&rdquo;
+          </p>
+        </blockquote>
+
+        {/* CTA */}
+        <Link href={href}>
+          <div
+            className="flex items-center gap-2.5 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all active:scale-95"
+            style={{ background: spark.accentColor, color: '#000' }}
+          >
+            <ArrowUpRight className="w-4 h-4" />
+            {label}
+          </div>
+        </Link>
+      </div>
     </div>
   );
 }

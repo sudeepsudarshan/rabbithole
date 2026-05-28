@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mic, MessageCircle, BookOpen, ChevronUp, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { Mic, MessageCircle, BookOpen, ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,6 @@ interface SparkCardProps {
   onOpenPanel?: (sparkId: string, tab: PanelTab) => void;
 }
 
-// 25% smaller than original 50px = 38px circle, 17px icon
 function ActionBtn({
   icon: Icon,
   label,
@@ -30,19 +29,19 @@ function ActionBtn({
   href?: string;
 }) {
   const content = (
-    <div className="flex flex-col items-center gap-[4px]">
+    <div className="flex flex-col items-center gap-[3px]">
       <div
-        className="w-[38px] h-[38px] rounded-full flex items-center justify-center border"
+        className="w-9 h-9 rounded-full flex items-center justify-center border"
         style={{
-          background: 'rgba(0,0,0,0.50)',
-          backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
-          borderColor: 'rgba(255,255,255,0.20)',
+          background: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderColor: 'rgba(255,255,255,0.22)',
         }}
       >
-        <Icon className="w-[17px] h-[17px] text-white" />
+        <Icon className="w-4 h-4 text-white" />
       </div>
-      <span className="text-[0.48rem] text-white/55 font-mono uppercase tracking-widest leading-none">
+      <span className="text-[0.46rem] text-white/55 font-mono uppercase tracking-widest leading-none">
         {label}
       </span>
     </div>
@@ -74,28 +73,25 @@ export default function SparkCard({
   selectedTemplateIds = [],
   onOpenPanel,
 }: SparkCardProps) {
-  // Deeper always links somewhere — episode if available, else the template page
   const deeperHref = spark.episodeSlug
     ? `/episodes/${spark.episodeSlug}`
     : `/templates/${spark.templateId}`;
 
-  // Template badge label — add filter indicator if templates are selected
   const templateName = spark.templateLabel.split(' · ')[0];
   const isFiltered = selectedTemplateIds.length > 0;
-
-  // Persona host for this spark
   const persona = getPersonaForTemplate(spark.templateId);
 
   return (
     <article
       className={cn(
-        'relative w-full h-full overflow-hidden bg-black',
+        'relative w-full h-full flex flex-col overflow-hidden',
         !isActive && 'pointer-events-none'
       )}
+      style={{ background: 'var(--bg-elevated)' }}
       aria-hidden={!isActive}
     >
-      {/* Full-bleed hero image */}
-      <div className="absolute inset-0">
+      {/* ── Image section — top ~56% ──────────────────────────────── */}
+      <div className="relative flex-shrink-0" style={{ height: '56%' }}>
         <Image
           src={spark.heroImage}
           alt=""
@@ -104,61 +100,43 @@ export default function SparkCard({
           priority={isActive}
           sizes="100vw"
         />
+
+        {/* Gradient bottom fade into card content */}
+        <div
+          className="absolute bottom-0 inset-x-0 h-14 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, var(--bg-elevated), transparent)' }}
+        />
+
+        {/* Action buttons — top-right on image */}
+        <div className="absolute top-3 right-3 flex flex-col gap-3.5 items-center z-10">
+          <ActionBtn
+            icon={Mic}
+            label="Podcast"
+            onClick={() => onOpenPanel?.(spark.id, 'podcast')}
+          />
+          <ActionBtn
+            icon={MessageCircle}
+            label="Ask"
+            onClick={() => onOpenPanel?.(spark.id, 'ask')}
+          />
+          <ActionBtn icon={BookOpen} label="Deeper" href={deeperHref} />
+        </div>
       </div>
 
-      {/* Gradient overlay — deeper at bottom for more text room */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(to top, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.85) 45%, rgba(0,0,0,0.35) 65%, rgba(0,0,0,0.08) 100%)',
-        }}
-      />
-
-      {/* Accent colour bloom at bottom */}
-      <div
-        className="absolute bottom-0 inset-x-0 h-[55%] pointer-events-none"
-        style={{
-          background: `linear-gradient(to top, ${spark.accentColor}26 0%, transparent 100%)`,
-        }}
-      />
-
-      {/* ── Top-right action column (25% smaller, moved up) ───────── */}
-      <div
-        className="absolute right-3 flex flex-col gap-4 items-center z-10"
-        style={{ top: 'calc(max(56px, env(safe-area-inset-top) + 44px))' }}
-      >
-        <ActionBtn
-          icon={Mic}
-          label="Podcast"
-          onClick={() => onOpenPanel?.(spark.id, 'podcast')}
-        />
-        <ActionBtn
-          icon={MessageCircle}
-          label="Ask"
-          onClick={() => onOpenPanel?.(spark.id, 'ask')}
-        />
-        <ActionBtn icon={BookOpen} label="Deeper" href={deeperHref} />
-      </div>
-
-      {/* ── Bottom content overlay — taller, full answer + hookLine ── */}
-      <div
-        className="absolute inset-x-0 px-5 pr-[60px] z-10 max-h-[58vh] overflow-hidden"
-        style={{ bottom: 'calc(max(44px, env(safe-area-inset-bottom) + 32px))' }}
-      >
-        {/* Template badge — tappable button to open picker */}
+      {/* ── Content section — bottom ~44% ─────────────────────────── */}
+      <div className="flex-1 flex flex-col px-5 pt-2 pb-3 overflow-hidden min-h-0">
+        {/* Template badge */}
         <button
           onClick={onOpenTemplatePicker}
           className={cn(
-            'inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-full',
-            'text-[0.6rem] font-mono uppercase tracking-wider border mb-3',
-            'transition-all active:scale-95',
-            'hover:opacity-90'
+            'self-start inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-full',
+            'text-[0.6rem] font-mono uppercase tracking-wider border mb-2',
+            'transition-all active:scale-95'
           )}
           style={{
             color: spark.accentColor,
             borderColor: `${spark.accentColor}55`,
-            background: `${spark.accentColor}18`,
+            background: `${spark.accentColor}15`,
           }}
           aria-label="Open template filter"
         >
@@ -180,52 +158,56 @@ export default function SparkCard({
 
         {/* Host monogram */}
         {persona && (
-          <div className="flex items-center gap-1.5 mb-2.5">
+          <div className="flex items-center gap-1.5 mb-1.5">
             <div
               className="w-4 h-4 rounded-full flex items-center justify-center text-[0.48rem] font-bold flex-shrink-0"
-              style={{ background: `${spark.accentColor}30`, color: spark.accentColor }}
+              style={{ background: `${spark.accentColor}25`, color: spark.accentColor }}
             >
               {persona.name.charAt(0)}
             </div>
-            <span className="text-[0.58rem] font-mono text-white/40 uppercase tracking-wider">
-              Hosted by {persona.name}
+            <span
+              className="text-[0.56rem] font-mono uppercase tracking-wider"
+              style={{ color: 'var(--ink-muted)' }}
+            >
+              {persona.name}
             </span>
           </div>
         )}
 
         {/* Title */}
         <h2
-          className="font-serif italic text-[1.4rem] leading-[1.25] text-white mb-2.5"
-          style={{ textShadow: '0 2px 14px rgba(0,0,0,0.7)' }}
+          className="font-serif text-[1.25rem] leading-[1.22] mb-2"
+          style={{ color: 'var(--ink-primary)' }}
         >
           {spark.title}
         </h2>
 
-        {/* Full answer — no line clamp, gradient provides fade */}
-        <p className="text-[0.83rem] text-white/75 font-serif italic leading-relaxed">
+        {/* Answer — line-clamped */}
+        <p
+          className="text-[0.82rem] font-serif italic leading-relaxed line-clamp-3"
+          style={{ color: 'var(--ink-secondary)' }}
+        >
           {spark.answer}
         </p>
 
-        {/* Hook line pull-quote */}
-        <p className="text-[0.78rem] text-white/50 italic mt-2.5 leading-snug">
-          {spark.hookLine}
-        </p>
-      </div>
+        {/* Spacer */}
+        <div className="flex-1 min-h-0" />
 
-      {/* ── Swipe-up hint ─────────────────────────────────────────── */}
-      <div
-        className="absolute inset-x-0 flex flex-col items-center gap-0.5 z-10"
-        style={{ bottom: 'calc(max(14px, env(safe-area-inset-bottom) + 6px))' }}
-      >
-        <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-        >
-          <ChevronUp className="w-[18px] h-[18px] text-white/30" />
-        </motion.div>
-        <span className="text-[0.5rem] text-white/25 font-mono uppercase tracking-[0.18em]">
-          swipe up
-        </span>
+        {/* Swipe hint */}
+        <div className="flex flex-col items-center gap-0.5 pt-1">
+          <motion.div
+            animate={{ y: [0, -4, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+          >
+            <ChevronUp className="w-[16px] h-[16px]" style={{ color: 'var(--ink-faint)' }} />
+          </motion.div>
+          <span
+            className="text-[0.48rem] font-mono uppercase tracking-[0.18em]"
+            style={{ color: 'var(--ink-faint)' }}
+          >
+            swipe up
+          </span>
+        </div>
       </div>
     </article>
   );
