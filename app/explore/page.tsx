@@ -22,12 +22,15 @@ export default function ExplorePage() {
       <TopFive />
 
       {/* CTA Section */}
-      <section className="py-24 px-6 border-t border-border text-center">
+      <section
+        className="py-24 px-6 text-center"
+        style={{ borderTop: '1px solid var(--border-hairline)' }}
+      >
         <div className="max-w-xl mx-auto">
-          <h2 className="font-serif italic text-3xl text-paper mb-4">
+          <h2 className="font-serif text-3xl text-ink-primary mb-4">
             Ready to go down the rabbit hole?
           </h2>
-          <p className="text-paper-faint text-sm font-sans mb-8 leading-relaxed">
+          <p className="text-ink-muted text-sm font-sans mb-8 leading-relaxed">
             Pick any of 20 templates, type a question, and watch where it goes.
             No account needed.
           </p>

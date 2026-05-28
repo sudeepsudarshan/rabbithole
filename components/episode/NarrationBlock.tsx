@@ -8,7 +8,7 @@ interface NarrationBlockProps {
 export default function NarrationBlock({ html, className }: NarrationBlockProps) {
   return (
     <div
-      className={cn('episode-narration', className)}
+      className={cn('narration', className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

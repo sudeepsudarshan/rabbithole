@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/store/uiStore';
-import ThemeToggle from '@/components/ui/ThemeToggle';
 
 const NAV_LINKS = [
   { href: '/', label: 'Sparks', icon: Sparkles, exact: true },
@@ -26,7 +25,7 @@ const NAV_LINKS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { sidebarOpen, setSidebarOpen } = useUIStore();
+  const { sidebarOpen, setSidebarOpen, theme, toggleTheme } = useUIStore();
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
@@ -38,17 +37,15 @@ export default function Sidebar() {
         onClick={() => setSidebarOpen(true)}
         className={cn(
           'fixed left-4 z-50 w-11 h-11 rounded-full',
-          'bg-black/50 backdrop-blur border border-gold/40 hover:border-gold/80',
-          'flex items-center justify-center shadow-lg',
-          'transition-all duration-200 hover:scale-110 active:scale-95',
+          'bg-[var(--bg-elevated)] border border-hairline hover:border-ink-line',
+          'flex items-center justify-center',
+          'transition-colors duration-150',
           'group'
         )}
         style={{ top: 'max(16px, env(safe-area-inset-top) + 8px)' }}
         aria-label="Open navigation"
       >
-        <Rabbit className="w-4 h-4 text-gold group-hover:text-gold-bright transition-colors" />
-        {/* Pulse ring */}
-        <span className="absolute inset-0 rounded-full border border-gold/20 animate-ping" />
+        <Rabbit className="w-4 h-4 text-accent-rust" />
       </button>
 
       <AnimatePresence>
@@ -61,7 +58,8 @@ export default function Sidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-ink/70 backdrop-blur-sm"
+              className="fixed inset-0 z-40"
+              style={{ background: 'var(--bg-overlay)', backdropFilter: 'blur(4px)' }}
               onClick={() => setSidebarOpen(false)}
             />
 
@@ -72,26 +70,39 @@ export default function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: -320 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed inset-y-0 left-0 z-50 w-72 bg-ink-50 border-r border-border flex flex-col shadow-2xl"
+              className="fixed inset-y-0 left-0 z-50 w-72 flex flex-col"
+              style={{
+                background: 'var(--bg-elevated)',
+                borderRight: '1px solid var(--border-hairline)',
+              }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <div
+                className="flex items-center justify-between px-5 py-4"
+                style={{ borderBottom: '1px solid var(--border-hairline)' }}
+              >
                 <Link
                   href="/"
                   onClick={() => setSidebarOpen(false)}
                   className="flex items-center gap-2.5 group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gold-faint border border-gold/30 flex items-center justify-center group-hover:border-gold/60 transition-colors">
-                    <Rabbit className="w-4 h-4 text-gold" />
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{
+                      background: 'var(--state-hover)',
+                      border: '1px solid var(--border-hairline)',
+                    }}
+                  >
+                    <Rabbit className="w-4 h-4 text-accent-rust" />
                   </div>
                   <div>
-                    <p className="font-serif italic text-sm text-paper leading-none">Down the</p>
-                    <p className="font-serif italic text-sm text-gold leading-none">Rabbit Hole</p>
+                    <p className="font-serif text-sm text-ink-primary leading-none">Down the</p>
+                    <p className="font-serif text-sm text-accent-rust leading-none">Rabbit Hole</p>
                   </div>
                 </Link>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-2 text-paper-faint hover:text-paper transition-colors rounded-lg hover:bg-white/5"
+                  className="p-2 text-ink-muted hover:text-ink-primary transition-colors rounded-md hover:bg-[var(--state-hover)]"
                   aria-label="Close navigation"
                 >
                   <X className="w-4 h-4" />
@@ -99,7 +110,7 @@ export default function Sidebar() {
               </div>
 
               {/* Nav links */}
-              <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+              <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
                 {NAV_LINKS.map(({ href, label, icon: Icon, exact }) => {
                   const active = isActive(href, exact);
                   return (
@@ -108,26 +119,68 @@ export default function Sidebar() {
                       href={href}
                       onClick={() => setSidebarOpen(false)}
                       className={cn(
-                        'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all',
+                        'flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-sans transition-colors duration-150',
                         active
-                          ? 'text-gold bg-gold-faint border border-gold/20'
-                          : 'text-paper-muted hover:text-paper hover:bg-white/5'
+                          ? 'text-ink-primary bg-[var(--state-active)] border border-hairline'
+                          : 'text-ink-secondary hover:text-ink-primary hover:bg-[var(--state-hover)]'
                       )}
                     >
-                      <Icon className={cn('w-4 h-4', active ? 'text-gold' : 'text-paper-faint')} />
+                      <Icon
+                        className={cn(
+                          'w-4 h-4 shrink-0',
+                          active ? 'text-accent-rust' : 'text-ink-muted'
+                        )}
+                      />
                       {label}
                       {active && (
-                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-gold" />
+                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-rust" />
                       )}
                     </Link>
                   );
                 })}
               </nav>
 
-              {/* Bottom section */}
-              <div className="px-3 py-4 border-t border-border space-y-1">
-                <ThemeToggle />
-                <p className="px-4 pt-2 text-[0.6rem] font-mono text-paper-faint/60 uppercase tracking-wider">
+              {/* Bottom: editorial Day/Night toggle + version */}
+              <div
+                className="px-5 py-4 space-y-3"
+                style={{ borderTop: '1px solid var(--border-hairline)' }}
+              >
+                {/* Day · Night toggle */}
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center gap-3 w-full group"
+                  aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+                >
+                  <span
+                    className="font-mono text-[0.625rem] tracking-widest transition-colors duration-300"
+                    style={{ color: theme === 'light' ? 'var(--ink-primary)' : 'var(--ink-faint)' }}
+                  >
+                    Day
+                  </span>
+
+                  {/* Track */}
+                  <span
+                    className="relative flex-1 h-px"
+                    style={{ background: 'var(--border-hairline)' }}
+                  >
+                    {/* Sliding dot */}
+                    <motion.span
+                      className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-accent-rust"
+                      animate={{ left: theme === 'dark' ? '100%' : '0%' }}
+                      style={{ translateX: theme === 'dark' ? '-100%' : '0%' }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                    />
+                  </span>
+
+                  <span
+                    className="font-mono text-[0.625rem] tracking-widest transition-colors duration-300"
+                    style={{ color: theme === 'dark' ? 'var(--ink-primary)' : 'var(--ink-faint)' }}
+                  >
+                    Night
+                  </span>
+                </button>
+
+                <p className="font-mono text-[0.6rem] text-ink-faint">
                   Down the Rabbit Hole · v0.1
                 </p>
               </div>

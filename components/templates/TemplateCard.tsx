@@ -16,18 +16,18 @@ export default function TemplateCard({ template, featured = false }: TemplateCar
   return (
     <article
       className={cn(
-        'border border-border bg-ink-50 flex flex-col transition-all duration-200 hover:border-border-strong',
+        'border border-hairline bg-elevated flex flex-col transition-colors duration-150 hover:border-ink-line',
         featured ? 'rounded-xl' : 'rounded-lg'
       )}
       style={{
-        borderTopColor: `${template.accentColor}30`,
+        borderTopColor: `${template.accentColor}50`,
         borderTopWidth: '2px',
       }}
     >
       {/* Card header — clickable */}
       <Link
         href={`/templates/${template.id}`}
-        className="block p-5 pb-3 hover:bg-white/[0.02] transition-colors rounded-t-lg group"
+        className="block p-5 pb-3 hover:bg-[var(--state-hover)] transition-colors rounded-t-lg group"
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <span
@@ -41,23 +41,23 @@ export default function TemplateCard({ template, featured = false }: TemplateCar
           </Badge>
         </div>
 
-        <h3 className="font-serif italic text-[1.1rem] text-paper leading-tight mb-2 group-hover:text-gold transition-colors">
+        <h3 className="font-serif text-[1.1rem] text-ink-primary leading-tight mb-2 group-hover:text-accent-rust transition-colors">
           {template.name}
         </h3>
-        <p className="text-xs text-paper-faint leading-relaxed font-sans line-clamp-2">
+        <p className="text-xs text-ink-muted leading-relaxed font-sans line-clamp-2">
           {template.tagline}
         </p>
 
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-[0.65rem] font-mono text-paper-faint">
+          <span className="text-[0.65rem] font-mono text-ink-faint">
             {template.durationRange}
           </span>
           <EQBar score={template.eqScore} className="w-24" />
         </div>
       </Link>
 
-      {/* Separator */}
-      <div className="h-px bg-border mx-5" />
+      {/* Chapter mark separator */}
+      <div className="h-px bg-hairline mx-5" />
 
       {/* Rabbit hole input */}
       <div className="p-4 pt-3">

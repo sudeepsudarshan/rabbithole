@@ -31,7 +31,7 @@ export default function ChapterContent({
       {/* Chapter header */}
       <div className="mb-8">
         <div className="flex items-baseline gap-3 mb-2">
-          <span className="font-mono text-[0.65rem] text-paper-faint">
+          <span className="font-mono text-[0.65rem] text-ink-muted">
             Chapter {chapter.number}
           </span>
           <span
@@ -41,7 +41,7 @@ export default function ChapterContent({
             {chapter.context}
           </span>
         </div>
-        <h1 className="font-serif italic text-2xl md:text-3xl text-paper leading-tight">
+        <h1 className="font-serif text-2xl md:text-3xl text-ink-primary leading-tight">
           {chapter.title}
         </h1>
       </div>

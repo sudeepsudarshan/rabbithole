@@ -25,10 +25,10 @@ export default function FilterBar() {
           role="tab"
           aria-selected={activeFilter === value}
           className={cn(
-            'shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-150 whitespace-nowrap min-h-[44px]',
+            'shrink-0 px-4 py-1.5 rounded-full text-sm font-sans font-medium transition-colors duration-150 whitespace-nowrap min-h-[44px]',
             activeFilter === value
-              ? 'bg-gold text-ink'
-              : 'bg-white/5 text-paper-muted border border-border hover:border-border-strong hover:text-paper'
+              ? 'bg-accent-rust text-elevated border border-transparent'
+              : 'bg-transparent text-ink-muted border border-hairline hover:border-ink-line hover:text-ink-primary hover:bg-[var(--state-hover)]'
           )}
         >
           {label}

@@ -14,10 +14,10 @@ export default function ChatMessage({ role, content, isStreaming = false }: Chat
     <div className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[85%] rounded-lg px-4 py-3 text-sm',
+          'max-w-[85%] rounded-lg px-4 py-3 text-sm border',
           isUser
-            ? 'bg-gold-faint border border-gold/20 text-paper font-sans rounded-tr-sm'
-            : 'bg-ink-100 border border-border rounded-tl-sm'
+            ? 'bg-[var(--state-active)] border-[var(--border-accent)] text-ink-primary font-sans rounded-tr-sm'
+            : 'bg-elevated border-hairline rounded-tl-sm'
         )}
       >
         {isUser ? (
@@ -26,7 +26,7 @@ export default function ChatMessage({ role, content, isStreaming = false }: Chat
           <StreamingText
             text={content}
             isStreaming={isStreaming}
-            className="text-[0.9rem] text-paper leading-relaxed"
+            className="text-[0.9rem] text-ink-primary leading-relaxed font-serif italic"
           />
         )}
       </div>
