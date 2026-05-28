@@ -9,7 +9,6 @@ import {
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X,
   BookOpen,
   MessageCircle,
   Mic,
@@ -18,7 +17,7 @@ import {
   RotateCcw,
   Play,
   Pause,
-  ChevronRight,
+  ChevronDown,
   ArrowUpRight,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -822,30 +821,25 @@ export default function SparkPanel({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full" style={{ background: 'var(--ink-faint)' }} />
-            </div>
-
-            {/* Top bar */}
-            <div className="flex items-center gap-3 px-4 pt-1 pb-3 flex-shrink-0">
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all active:scale-90"
-                style={{
-                  background: 'var(--state-hover)',
-                  border: '1px solid var(--border-hairline)',
-                }}
-                aria-label="Back to spark"
-              >
-                <X className="w-3.5 h-3.5" style={{ color: 'var(--ink-secondary)' }} />
-              </button>
-              <p className="font-serif italic text-[0.82rem] leading-snug line-clamp-1 flex-1"
-                style={{ color: 'var(--ink-secondary)' }}>
-                {spark.title}
-              </p>
-              <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--ink-faint)' }} />
-            </div>
+            {/* Handle + back strip — full-width tap target to dismiss */}
+            <button
+              onClick={onClose}
+              className="flex flex-col items-center pt-3 pb-2 px-4 flex-shrink-0 w-full transition-colors active:bg-[var(--state-hover)]"
+              aria-label="Back to spark"
+            >
+              {/* Drag handle */}
+              <div className="w-10 h-1 rounded-full mb-3" style={{ background: 'var(--ink-faint)' }} />
+              {/* Back row */}
+              <div className="flex items-center gap-2 w-full">
+                <ChevronDown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--ink-muted)' }} />
+                <span className="font-mono text-[0.6rem] uppercase tracking-widest flex-shrink-0" style={{ color: 'var(--ink-muted)' }}>
+                  Back to spark
+                </span>
+                <span className="font-serif italic text-[0.78rem] leading-snug line-clamp-1 flex-1 text-right" style={{ color: 'var(--ink-faint)' }}>
+                  {spark.title}
+                </span>
+              </div>
+            </button>
 
             {/* Tab bar */}
             <div className="flex flex-shrink-0 px-4"

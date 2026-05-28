@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useCallback, useRef } from 'react';
 import { SPARKS, getSparkById } from '@/lib/sparks';
+import { useUIStore } from '@/store/uiStore';
 import SparkFeed from './SparkFeed';
 import TemplatePickerSheet from './TemplatePickerSheet';
 import SparkPanel, { type PanelTab, type PanelState, defaultPanelState } from './SparkPanel';
@@ -18,12 +19,18 @@ function shuffle<T>(arr: T[]): T[] {
 const MAX_CACHE = 10;
 
 export default function SparkFeedHome() {
+  const { setSparkPanelOpen } = useUIStore();
   const [seed, setSeed] = useState(0);
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([]);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   // Panel state
   const [panelOpen, setPanelOpen] = useState(false);
+
+  const openPanel = useCallback((open: boolean) => {
+    setPanelOpen(open);
+    setSparkPanelOpen(open);
+  }, [setSparkPanelOpen]);
   const [activePanelSparkId, setActivePanelSparkId] = useState<string | null>(null);
   const [activePanelTab, setActivePanelTab] = useState<PanelTab>('deeper');
 
@@ -68,8 +75,8 @@ export default function SparkFeedHome() {
     }
     setActivePanelSparkId(sparkId);
     setActivePanelTab(tab);
-    setPanelOpen(true);
-  }, []);
+    openPanel(true);
+  }, [openPanel]);
 
   const activeSpark = activePanelSparkId ? getSparkById(activePanelSparkId) ?? null : null;
 
@@ -95,7 +102,7 @@ export default function SparkFeedHome() {
         open={panelOpen}
         initialTab={activePanelTab}
         panelCache={panelCache}
-        onClose={() => setPanelOpen(false)}
+        onClose={() => openPanel(false)}
       />
     </>
   );
