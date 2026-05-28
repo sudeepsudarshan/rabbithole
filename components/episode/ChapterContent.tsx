@@ -26,8 +26,21 @@ export default function ChapterContent({
   onNextChapter,
   onPromptClick,
 }: ChapterContentProps) {
+  const prevChapter = episode.chapters.find(c => c.number === chapter.number - 1);
+  const nextChapter = episode.chapters.find(c => c.number === chapter.number + 1);
+
   return (
     <div>
+      {/* Episode subtitle — shown only on chapter 1 to orient first-time readers */}
+      {chapter.number === 1 && episode.subtitle && (
+        <p
+          className="font-serif italic text-sm leading-relaxed mb-6 pl-3 border-l-2"
+          style={{ color: 'var(--ink-muted)', borderColor: template.accentColor }}
+        >
+          {episode.subtitle}
+        </p>
+      )}
+
       {/* Chapter header */}
       <div className="mb-8">
         <div className="flex items-baseline gap-3 mb-2">
@@ -62,10 +75,20 @@ export default function ChapterContent({
         className="mb-8"
       />
 
-      {/* Chapter navigation */}
+      {/* Chapter progress + navigation */}
+      <div className="mb-2 flex items-center gap-3">
+        <div className="flex-1 h-px" style={{ background: 'var(--border-hairline)' }} />
+        <span className="font-mono text-[0.58rem] tracking-wider" style={{ color: 'var(--ink-faint)' }}>
+          {chapter.number} of {episode.chapters.length}
+        </span>
+        <div className="flex-1 h-px" style={{ background: 'var(--border-hairline)' }} />
+      </div>
+
       <ChapterNav
         currentChapter={chapter.number}
         totalChapters={episode.chapters.length}
+        prevTitle={prevChapter?.title}
+        nextTitle={nextChapter?.title}
         onPrev={onPrevChapter}
         onNext={onNextChapter}
         className="mb-0"

@@ -73,10 +73,6 @@ export default function SparkCard({
   selectedTemplateIds = [],
   onOpenPanel,
 }: SparkCardProps) {
-  const deeperHref = spark.episodeSlug
-    ? `/episodes/${spark.episodeSlug}`
-    : `/templates/${spark.templateId}`;
-
   const templateName = spark.templateLabel.split(' · ')[0];
   const isFiltered = selectedTemplateIds.length > 0;
   const persona = getPersonaForTemplate(spark.templateId);
@@ -125,7 +121,7 @@ export default function SparkCard({
             label="Ask"
             onClick={() => onOpenPanel?.(spark.id, 'ask')}
           />
-          <ActionBtn icon={BookOpen} label="Deeper" href={deeperHref} />
+          <ActionBtn icon={BookOpen} label="Deeper" onClick={() => onOpenPanel?.(spark.id, 'deeper')} />
         </div>
       </div>
 

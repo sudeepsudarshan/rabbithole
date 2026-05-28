@@ -17,7 +17,7 @@ import {
   Loader2,
   RotateCcw,
   Play,
-  SkipForward,
+  Pause,
   ChevronRight,
   ArrowUpRight,
 } from 'lucide-react';
@@ -36,11 +36,6 @@ interface Message {
   content: string;
 }
 
-interface PodcastTurn {
-  host: 'Jay' | 'Maya';
-  text: string;
-}
-
 export interface PanelState {
   activeTab: PanelTab;
   ask: {
@@ -49,8 +44,14 @@ export interface PanelState {
     inputDraft: string;
   };
   podcast: {
-    turns: PodcastTurn[];
-    visibleCount: number;
+    playing: boolean;
+    progress: number;
+    speed: number;
+    loading: boolean;
+    error: string | null;
+  };
+  deeper: {
+    article: string | null;
     loading: boolean;
     error: string | null;
   };
@@ -60,7 +61,8 @@ export function defaultPanelState(tab: PanelTab = 'deeper'): PanelState {
   return {
     activeTab: tab,
     ask: { messages: [], streaming: false, inputDraft: '' },
-    podcast: { turns: [], visibleCount: 0, loading: false, error: null },
+    podcast: { playing: false, progress: 0, speed: 1, loading: false, error: null },
+    deeper: { article: null, loading: false, error: null },
   };
 }
 
@@ -74,24 +76,52 @@ const TABS: { id: PanelTab; icon: typeof BookOpen; label: string }[] = [
 
 // ─── Deeper tab ──────────────────────────────────────────────────────────────
 
-function DeeperTab({ spark }: { spark: SparkCard }) {
-  const href = spark.episodeSlug
-    ? `/episodes/${spark.episodeSlug}`
-    : `/templates/${spark.templateId}`;
-  const label = spark.episodeSlug ? 'Read full episode' : 'Try this template';
+function DeeperTab({
+  spark,
+  state,
+  onStateChange,
+}: {
+  spark: SparkCard;
+  state: PanelState['deeper'];
+  onStateChange: (update: Partial<PanelState['deeper']>) => void;
+}) {
   const persona = getPersonaForTemplate(spark.templateId);
+
+  const fetchArticle = useCallback(async () => {
+    onStateChange({ loading: true, error: null });
+    try {
+      const res = await fetch('/api/deeper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: spark.title,
+          question: spark.question,
+          answer: spark.answer,
+          templateLabel: spark.templateLabel,
+          hookLine: spark.hookLine,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      const data = await res.json();
+      onStateChange({ article: data.article ?? null, loading: false });
+    } catch {
+      onStateChange({ loading: false, error: 'Couldn\'t generate the article. Try again.' });
+    }
+  }, [spark, onStateChange]);
+
+  // Auto-fetch article for sparks without a pre-written episode
+  useEffect(() => {
+    if (!spark.episodeSlug && !state.article && !state.loading && !state.error) {
+      fetchArticle();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col">
-      {/* Hero image — article-style at the top */}
+      {/* Hero image */}
       <div className="relative w-full flex-shrink-0" style={{ height: '200px' }}>
-        <Image
-          src={spark.heroImage}
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
+        <Image src={spark.heroImage} alt="" fill className="object-cover" sizes="100vw" />
         <div
           className="absolute bottom-0 inset-x-0 h-10 pointer-events-none"
           style={{ background: 'linear-gradient(to top, var(--bg-elevated), transparent)' }}
@@ -147,16 +177,58 @@ function DeeperTab({ spark }: { spark: SparkCard }) {
           </p>
         </blockquote>
 
-        {/* CTA */}
-        <Link href={href}>
-          <div
-            className="flex items-center gap-2.5 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all active:scale-95"
-            style={{ background: spark.accentColor, color: '#000' }}
-          >
-            <ArrowUpRight className="w-4 h-4" />
-            {label}
-          </div>
-        </Link>
+        {/* For sparks with an episode — link to full episode */}
+        {spark.episodeSlug && (
+          <Link href={`/episodes/${spark.episodeSlug}`}>
+            <div
+              className="flex items-center gap-2.5 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all active:scale-95"
+              style={{ background: spark.accentColor, color: '#000' }}
+            >
+              <ArrowUpRight className="w-4 h-4" />
+              Read full episode
+            </div>
+          </Link>
+        )}
+
+        {/* For sparks without an episode — show generated article */}
+        {!spark.episodeSlug && (
+          <>
+            {state.loading && (
+              <div className="flex flex-col items-center gap-3 py-8">
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: 'var(--ink-muted)' }} />
+                <p className="text-sm font-serif italic" style={{ color: 'var(--ink-muted)' }}>Going deeper…</p>
+              </div>
+            )}
+            {state.error && (
+              <div className="flex flex-col items-center gap-3 py-8">
+                <p className="text-sm text-center" style={{ color: 'var(--ink-secondary)' }}>{state.error}</p>
+                <button
+                  onClick={fetchArticle}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm"
+                  style={{ border: '1px solid var(--border-hairline)', color: 'var(--ink-secondary)' }}
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> Try again
+                </button>
+              </div>
+            )}
+            {state.article && (
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1" style={{ background: 'var(--border-hairline)' }} />
+                  <span className="text-[0.58rem] font-mono uppercase tracking-widest" style={{ color: 'var(--ink-faint)' }}>
+                    Deep dive
+                  </span>
+                  <div className="h-px flex-1" style={{ background: 'var(--border-hairline)' }} />
+                </div>
+                {state.article.split('\n\n').filter(Boolean).map((para, i) => (
+                  <p key={i} className="text-[0.86rem] font-serif leading-relaxed" style={{ color: 'var(--ink-secondary)' }}>
+                    {para}
+                  </p>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -177,7 +249,6 @@ function AskTab({
   const bottomRef = useRef<HTMLDivElement>(null);
   const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state.messages.length, state.streaming]);
@@ -243,9 +314,7 @@ function AskTab({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Conversation thread */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-        {/* Spark context strip */}
         <div className="rounded-xl px-4 py-3 mb-4"
           style={{ border: '1px solid var(--border-hairline)', background: 'var(--state-hover)' }}>
           <p className="text-[0.6rem] font-mono uppercase tracking-wider mb-1" style={{ color: spark.accentColor }}>
@@ -256,7 +325,6 @@ function AskTab({
           </p>
         </div>
 
-        {/* Suggested questions — shown when thread is empty */}
         {!hasMessages && (
           <div className="space-y-2">
             <p className="text-[0.6rem] font-mono uppercase tracking-wider px-1 text-[var(--ink-faint)]">
@@ -290,7 +358,6 @@ function AskTab({
           </div>
         )}
 
-        {/* Messages */}
         {state.messages.map((msg, i) => {
           const isUser = msg.role === 'user';
           const isLastAI = !isUser && i === state.messages.length - 1 && state.streaming;
@@ -299,9 +366,7 @@ function AskTab({
               <div
                 className={cn(
                   'max-w-[88%] px-4 py-3 rounded-2xl text-[0.83rem] leading-relaxed',
-                  isUser
-                    ? 'rounded-br-sm font-sans'
-                    : 'rounded-bl-sm font-serif italic'
+                  isUser ? 'rounded-br-sm font-sans' : 'rounded-bl-sm font-serif italic'
                 )}
                 style={
                   isUser
@@ -328,7 +393,6 @@ function AskTab({
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
       <div className="px-4 py-3 flex gap-2 items-center flex-shrink-0"
         style={{ borderTop: '1px solid var(--border-hairline)' }}>
         <input
@@ -371,26 +435,95 @@ function AskTab({
   );
 }
 
-// ─── Podcast tab ─────────────────────────────────────────────────────────────
+// ─── Podcast tab — audio narration player ────────────────────────────────────
 
-const HOST_STYLE = {
-  Jay: { emoji: '🎙', role: 'The Curious One' },
-  Maya: { emoji: '🧠', role: 'The Deep Diver' },
-};
+const SPEEDS = [0.75, 1, 1.25, 1.5] as const;
 
 function PodcastTab({
   spark,
   state,
   onStateChange,
+  deeperState,
+  onDeeper,
 }: {
   spark: SparkCard;
   state: PanelState['podcast'];
   onStateChange: (update: Partial<PanelState['podcast']>) => void;
+  deeperState: PanelState['deeper'];
+  onDeeper: (update: Partial<PanelState['deeper']>) => void;
 }) {
-  const fetchPodcast = useCallback(async () => {
-    onStateChange({ loading: true, error: null, turns: [], visibleCount: 0 });
+  const chunksRef = useRef<string[]>([]);
+  const chunkIndexRef = useRef(0);
+  const activeRef = useRef(true);
+
+  // Split article text into ≤250-char sentence chunks (iOS Safari compatibility)
+  const buildChunks = (text: string): string[] => {
+    const sentences = text.match(/[^.!?]+[.!?]+[\s]*/g) ?? [text];
+    const chunks: string[] = [];
+    let current = '';
+    for (const s of sentences) {
+      if ((current + s).length > 250 && current) {
+        chunks.push(current.trim());
+        current = s;
+      } else {
+        current += s;
+      }
+    }
+    if (current.trim()) chunks.push(current.trim());
+    return chunks.length ? chunks : [text];
+  };
+
+  const playFrom = useCallback((index: number, speed: number, article: string) => {
+    if (!activeRef.current || typeof window === 'undefined' || !window.speechSynthesis) return;
+    if (index >= chunksRef.current.length) {
+      onStateChange({ playing: false, progress: 1 });
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(chunksRef.current[index]);
+    utterance.rate = speed;
+    utterance.lang = 'en-US';
+
+    utterance.onend = () => {
+      if (!activeRef.current) return;
+      const nextIndex = index + 1;
+      chunkIndexRef.current = nextIndex;
+      const prog = nextIndex / chunksRef.current.length;
+      onStateChange({ progress: Math.min(prog, 1) });
+      playFrom(nextIndex, speed, article);
+    };
+
+    utterance.onerror = () => {
+      if (!activeRef.current) return;
+      onStateChange({ playing: false });
+    };
+
+    window.speechSynthesis.speak(utterance);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onStateChange]);
+
+  const stopSpeech = useCallback(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+  }, []);
+
+  // Cancel on unmount or tab switch
+  useEffect(() => {
+    activeRef.current = true;
+    return () => {
+      activeRef.current = false;
+      stopSpeech();
+      onStateChange({ playing: false });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // If deeper article isn't loaded yet, trigger generation
+  const fetchArticle = useCallback(async () => {
+    onDeeper({ loading: true, error: null });
     try {
-      const res = await fetch('/api/podcast', {
+      const res = await fetch('/api/deeper', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -398,70 +531,99 @@ function PodcastTab({
           question: spark.question,
           answer: spark.answer,
           templateLabel: spark.templateLabel,
+          hookLine: spark.hookLine,
         }),
       });
       if (!res.ok) throw new Error('Failed');
       const data = await res.json();
-      onStateChange({ turns: data.turns ?? [], visibleCount: 1, loading: false });
+      onDeeper({ article: data.article ?? null, loading: false });
     } catch {
-      onStateChange({ loading: false, error: 'Couldn\'t generate the episode. Try again.' });
+      onDeeper({ loading: false, error: 'Couldn\'t load the article. Try again.' });
     }
-  }, [spark, onStateChange]);
+  }, [spark, onDeeper]);
 
-  // Auto-fetch when tab opened and no turns yet
   useEffect(() => {
-    if (state.turns.length === 0 && !state.loading && !state.error) {
-      fetchPodcast();
+    if (!deeperState.article && !deeperState.loading && !deeperState.error) {
+      fetchArticle();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-advance
-  useEffect(() => {
-    if (state.visibleCount === 0 || state.visibleCount >= state.turns.length) return;
-    const t = setTimeout(() => {
-      onStateChange({ visibleCount: Math.min(state.visibleCount + 1, state.turns.length) });
-    }, 7500);
-    return () => clearTimeout(t);
-  }, [state.visibleCount, state.turns.length, onStateChange]);
+  const handlePlayPause = () => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const article = deeperState.article;
+    if (!article) return;
+
+    if (state.playing) {
+      stopSpeech();
+      onStateChange({ playing: false });
+    } else {
+      // Fresh start or restart from beginning
+      chunksRef.current = buildChunks(article);
+      chunkIndexRef.current = 0;
+      onStateChange({ playing: true, progress: 0 });
+      playFrom(0, state.speed, article);
+    }
+  };
+
+  const handleSpeed = (speed: number) => {
+    onStateChange({ speed });
+    if (state.playing) {
+      // Restart from beginning with new speed
+      stopSpeech();
+      const article = deeperState.article;
+      if (!article) return;
+      chunksRef.current = buildChunks(article);
+      chunkIndexRef.current = 0;
+      onStateChange({ playing: true, progress: 0, speed });
+      playFrom(0, speed, article);
+    }
+  };
+
+  const handleRegenerate = () => {
+    stopSpeech();
+    onStateChange({ playing: false, progress: 0 });
+    onDeeper({ article: null, loading: false, error: null });
+    fetchArticle();
+  };
+
+  const isLoading = deeperState.loading || (!deeperState.article && !deeperState.error);
 
   return (
     <div className="flex flex-col h-full">
-      {/* Hosts strip */}
-      {state.turns.length > 0 && (
-        <div className="flex gap-4 px-5 py-3 flex-shrink-0"
-          style={{ borderBottom: '1px solid var(--border-hairline)' }}>
-          {(['Jay', 'Maya'] as const).map((host) => (
-            <div key={host} className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
-                style={{ background: 'var(--state-hover)', border: '1px solid var(--border-hairline)' }}>
-                {HOST_STYLE[host].emoji}
-              </div>
-              <div>
-                <p className="text-[0.58rem] font-mono uppercase tracking-wider leading-none"
-                  style={{ color: 'var(--ink-muted)' }}>{host}</p>
-                <p className="text-[0.58rem] leading-none" style={{ color: 'var(--ink-faint)' }}>
-                  {HOST_STYLE[host].role}
-                </p>
-              </div>
-            </div>
-          ))}
+      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+        {/* Cover art */}
+        <div className="relative w-full rounded-2xl overflow-hidden flex-shrink-0" style={{ height: '160px' }}>
+          <Image src={spark.heroImage} alt="" fill className="object-cover saturate-[0.85]" sizes="100vw" />
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.35)' }} />
+          <div className="absolute bottom-3 left-4 right-4">
+            <p className="text-[0.52rem] font-mono uppercase tracking-widest mb-0.5" style={{ color: spark.accentColor }}>
+              {state.playing ? 'Now playing' : 'Ready to play'}
+            </p>
+            <p className="text-white font-serif text-sm leading-snug line-clamp-2">
+              {spark.title}
+            </p>
+          </div>
         </div>
-      )}
 
-      {/* Turns */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {state.loading && (
-          <div className="flex flex-col items-center gap-3 py-16">
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex flex-col items-center gap-3 py-10">
             <Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--ink-muted)' }} />
-            <p className="text-sm font-serif italic" style={{ color: 'var(--ink-muted)' }}>Generating episode…</p>
+            <p className="text-sm font-serif italic" style={{ color: 'var(--ink-muted)' }}>
+              Preparing narration…
+            </p>
           </div>
         )}
-        {state.error && (
-          <div className="flex flex-col items-center gap-3 py-16">
-            <p className="text-sm text-center" style={{ color: 'var(--ink-secondary)' }}>{state.error}</p>
+
+        {/* Error state */}
+        {deeperState.error && !isLoading && (
+          <div className="flex flex-col items-center gap-3 py-10">
+            <p className="text-sm text-center" style={{ color: 'var(--ink-secondary)' }}>
+              {deeperState.error}
+            </p>
             <button
-              onClick={fetchPodcast}
+              onClick={handleRegenerate}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm"
               style={{ border: '1px solid var(--border-hairline)', color: 'var(--ink-secondary)' }}
             >
@@ -469,83 +631,88 @@ function PodcastTab({
             </button>
           </div>
         )}
-        <AnimatePresence>
-          {state.turns.slice(0, state.visibleCount).map((turn, i) => {
-            const isJay = turn.host === 'Jay';
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={cn('flex gap-2.5', isJay ? 'flex-row' : 'flex-row-reverse')}
+
+        {/* Player — article loaded */}
+        {deeperState.article && !isLoading && (
+          <>
+            {/* Play/pause */}
+            <div className="flex flex-col items-center gap-4">
+              <button
+                onClick={handlePlayPause}
+                className="w-14 h-14 rounded-full flex items-center justify-center transition-all active:scale-95"
+                style={{ background: spark.accentColor }}
               >
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm flex-shrink-0 mt-0.5"
-                  style={{ background: 'var(--state-hover)', border: '1px solid var(--border-hairline)' }}>
-                  {HOST_STYLE[turn.host].emoji}
-                </div>
+                {state.playing
+                  ? <Pause className="w-6 h-6 text-black" />
+                  : <Play className="w-6 h-6 text-black fill-black" />
+                }
+              </button>
+              <p className="text-[0.6rem] font-mono uppercase tracking-widest" style={{ color: 'var(--ink-faint)' }}>
+                {state.playing ? 'Tap to pause' : state.progress > 0 ? 'Tap to replay' : 'Tap to play'}
+              </p>
+            </div>
+
+            {/* Progress bar */}
+            <div>
+              <div className="h-1 rounded-full overflow-hidden" style={{ background: 'var(--border-hairline)' }}>
                 <div
-                  className={cn(
-                    'flex-1 rounded-2xl px-4 py-3 border max-w-[88%]',
-                    isJay ? 'rounded-tl-sm' : 'rounded-tr-sm'
-                  )}
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.round(state.progress * 100)}%`, background: spark.accentColor }}
+                />
+              </div>
+              <div className="flex justify-between mt-1">
+                <span className="font-mono text-[0.52rem]" style={{ color: 'var(--ink-faint)' }}>
+                  {Math.round(state.progress * 100)}%
+                </span>
+                <span className="font-mono text-[0.52rem]" style={{ color: 'var(--ink-faint)' }}>
+                  ~{Math.round((deeperState.article.split(' ').length / 150) * (1 / state.speed))} min
+                </span>
+              </div>
+            </div>
+
+            {/* Speed selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-[0.58rem] font-mono text-[var(--ink-faint)] mr-1">Speed</span>
+              {SPEEDS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => handleSpeed(s)}
+                  className="px-2.5 py-1 rounded-full text-[0.62rem] font-mono transition-all"
                   style={
-                    isJay
-                      ? { background: 'rgba(201,168,76,0.1)', borderColor: 'rgba(201,168,76,0.2)' }
-                      : { background: `${spark.accentColor}12`, borderColor: `${spark.accentColor}30` }
+                    state.speed === s
+                      ? { background: spark.accentColor, color: '#000' }
+                      : { border: '1px solid var(--border-hairline)', color: 'var(--ink-muted)' }
                   }
                 >
-                  <p className="text-[0.58rem] font-mono uppercase tracking-wider mb-1.5"
-                    style={{ color: isJay ? '#C9A84C' : spark.accentColor }}>
-                    {turn.host}
-                  </p>
-                  <p className="text-[0.83rem] font-serif italic leading-relaxed"
-                    style={{ color: 'var(--ink-primary)' }}>
-                    {turn.text}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </div>
+                  {s}×
+                </button>
+              ))}
+              <button
+                onClick={handleRegenerate}
+                className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.62rem] font-mono transition-all"
+                style={{ border: '1px solid var(--border-hairline)', color: 'var(--ink-muted)' }}
+              >
+                <RotateCcw className="w-2.5 h-2.5" />
+                New
+              </button>
+            </div>
 
-      {/* Controls */}
-      {state.turns.length > 0 && (
-        <div className="px-5 py-3 flex items-center gap-3 flex-shrink-0"
-          style={{ borderTop: '1px solid var(--border-hairline)' }}>
-          <div className="flex-1 h-0.5 rounded-full overflow-hidden"
-            style={{ background: 'var(--border-hairline)' }}>
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${(state.visibleCount / state.turns.length) * 100}%`,
-                background: spark.accentColor,
-              }}
-            />
-          </div>
-          <span className="font-mono text-[0.58rem]" style={{ color: 'var(--ink-faint)' }}>
-            {state.visibleCount}/{state.turns.length}
-          </span>
-          {state.visibleCount < state.turns.length ? (
-            <button
-              onClick={() => onStateChange({ visibleCount: state.visibleCount + 1 })}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-black"
-              style={{ background: spark.accentColor }}
-            >
-              <Play className="w-3 h-3 fill-current" /> Next
-            </button>
-          ) : (
-            <button
-              onClick={fetchPodcast}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs"
-              style={{ border: '1px solid var(--border-hairline)', color: 'var(--ink-secondary)' }}
-            >
-              <SkipForward className="w-3 h-3" /> New ep
-            </button>
-          )}
-        </div>
-      )}
+            {/* Article preview */}
+            <div className="pt-2 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1" style={{ background: 'var(--border-hairline)' }} />
+                <span className="text-[0.52rem] font-mono uppercase tracking-widest" style={{ color: 'var(--ink-faint)' }}>
+                  Transcript
+                </span>
+                <div className="h-px flex-1" style={{ background: 'var(--border-hairline)' }} />
+              </div>
+              <p className="text-[0.78rem] font-serif italic leading-relaxed line-clamp-6" style={{ color: 'var(--ink-muted)' }}>
+                {deeperState.article}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -567,14 +734,12 @@ export default function SparkPanel({
   panelCache,
   onClose,
 }: SparkPanelProps) {
-  // Get or create panel state for this spark
   const getState = useCallback((): PanelState => {
     if (!spark) return defaultPanelState();
     const cached = panelCache.current.get(spark.id);
     if (cached) return cached;
     const fresh = defaultPanelState(initialTab);
     panelCache.current.set(spark.id, fresh);
-    // LRU: keep max 10 entries
     if (panelCache.current.size > 10) {
       const firstKey = panelCache.current.keys().next().value;
       if (firstKey) panelCache.current.delete(firstKey);
@@ -584,7 +749,6 @@ export default function SparkPanel({
 
   const [localState, setLocalState] = useState<PanelState>(getState);
 
-  // Sync tab when panel opens for a different spark / different tab
   useEffect(() => {
     if (open && spark) {
       const s = getState();
@@ -618,13 +782,20 @@ export default function SparkPanel({
     });
   }, [spark, panelCache]);
 
+  const updateDeeper = useCallback((update: Partial<PanelState['deeper']>) => {
+    setLocalState((prev) => {
+      const updated = { ...prev, deeper: { ...prev.deeper, ...update } };
+      if (spark) panelCache.current.set(spark.id, updated);
+      return updated;
+    });
+  }, [spark, panelCache]);
+
   if (!spark) return null;
 
   return (
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
           <motion.div
             key="panel-backdrop"
             initial={{ opacity: 0 }}
@@ -636,7 +807,6 @@ export default function SparkPanel({
             onClick={onClose}
           />
 
-          {/* Panel */}
           <motion.div
             key="panel-sheet"
             initial={{ y: '100%' }}
@@ -657,7 +827,7 @@ export default function SparkPanel({
               <div className="w-10 h-1 rounded-full" style={{ background: 'var(--ink-faint)' }} />
             </div>
 
-            {/* Top bar: close + spark title */}
+            {/* Top bar */}
             <div className="flex items-center gap-3 px-4 pt-1 pb-3 flex-shrink-0">
               <button
                 onClick={onClose}
@@ -710,16 +880,22 @@ export default function SparkPanel({
               })}
             </div>
 
-            {/* Tab content — all tabs always mounted, hidden via CSS */}
+            {/* Tab content */}
             <div className="flex-1 overflow-hidden relative">
               <div className={localState.activeTab === 'deeper' ? 'h-full overflow-y-auto' : 'hidden'}>
-                <DeeperTab spark={spark} />
+                <DeeperTab spark={spark} state={localState.deeper} onStateChange={updateDeeper} />
               </div>
               <div className={localState.activeTab === 'ask' ? 'h-full flex flex-col' : 'hidden'}>
                 <AskTab spark={spark} state={localState.ask} onStateChange={updateAsk} />
               </div>
               <div className={localState.activeTab === 'podcast' ? 'h-full flex flex-col' : 'hidden'}>
-                <PodcastTab spark={spark} state={localState.podcast} onStateChange={updatePodcast} />
+                <PodcastTab
+                  spark={spark}
+                  state={localState.podcast}
+                  onStateChange={updatePodcast}
+                  deeperState={localState.deeper}
+                  onDeeper={updateDeeper}
+                />
               </div>
             </div>
           </motion.div>

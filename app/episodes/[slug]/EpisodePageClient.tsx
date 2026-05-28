@@ -90,8 +90,12 @@ export default function EpisodePageClient({
                     : 'bg-transparent text-ink-muted border border-hairline'
                   }
                 `}
+                title={ch.title}
               >
                 Ch.{ch.number}
+                {ch.number === currentChapterNum && (
+                  <span className="ml-1 hidden xs:inline opacity-80">– {ch.title.length > 16 ? ch.title.slice(0, 15) + '…' : ch.title}</span>
+                )}
               </button>
             ))}
           </div>
