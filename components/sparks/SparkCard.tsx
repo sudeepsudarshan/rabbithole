@@ -159,7 +159,6 @@ export default function SparkCard({
       <div
         className="flex-shrink-0 flex items-center justify-center gap-2 px-4"
         style={{
-          borderTop: '1px solid var(--border-hairline)',
           background: 'var(--bg-elevated)',
           height: '56px',
         }}
