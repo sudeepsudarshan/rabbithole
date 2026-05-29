@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Mic, MessageCircle, BookOpen, ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
@@ -17,54 +16,11 @@ interface SparkCardProps {
   onOpenPanel?: (sparkId: string, tab: PanelTab) => void;
 }
 
-function ActionBtn({
-  icon: Icon,
-  label,
-  onClick,
-  href,
-}: {
-  icon: React.ElementType;
-  label: string;
-  onClick?: () => void;
-  href?: string;
-}) {
-  const content = (
-    <div className="flex flex-col items-center gap-[3px]">
-      <div
-        className="w-9 h-9 rounded-full flex items-center justify-center border"
-        style={{
-          background: 'rgba(0,0,0,0.48)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderColor: 'rgba(255,255,255,0.22)',
-        }}
-      >
-        <Icon className="w-4 h-4 text-white" />
-      </div>
-      <span className="text-[0.45rem] text-white/60 font-mono uppercase tracking-widest leading-none">
-        {label}
-      </span>
-    </div>
-  );
-
-  if (href) {
-    return (
-      <Link href={href} className="block active:scale-90 transition-transform duration-100">
-        {content}
-      </Link>
-    );
-  }
-
-  return (
-    <button
-      onClick={onClick}
-      className="block active:scale-90 transition-transform duration-100"
-      aria-label={label}
-    >
-      {content}
-    </button>
-  );
-}
+const ACTIONS: { icon: React.ElementType; label: string; tab: PanelTab }[] = [
+  { icon: BookOpen, label: 'Deeper', tab: 'deeper' },
+  { icon: MessageCircle, label: 'Ask', tab: 'ask' },
+  { icon: Mic, label: 'Podcast', tab: 'podcast' },
+];
 
 export default function SparkCard({
   spark,
@@ -86,8 +42,8 @@ export default function SparkCard({
       style={{ background: 'var(--bg-elevated)' }}
       aria-hidden={!isActive}
     >
-      {/* ── Image section (top ~56%) ──────────────────────────────── */}
-      <div className="relative flex-shrink-0" style={{ height: '56%' }}>
+      {/* ── Image section — fills remaining space above content ───── */}
+      <div className="relative flex-1 min-h-0">
         <Image
           src={spark.heroImage}
           alt=""
@@ -97,36 +53,37 @@ export default function SparkCard({
           sizes="100vw"
         />
 
-        {/* Warm paper tint overlay — editorial print feel */}
+        {/* Warm paper tint overlay */}
         <div
           className="absolute inset-0 mix-blend-multiply opacity-[0.07] pointer-events-none"
           style={{ background: 'var(--bg-page)' }}
         />
 
-        {/* Gradient at image bottom — bleeds into content area */}
+        {/* Gradient at image bottom */}
         <div
           className="absolute bottom-0 inset-x-0 h-20 pointer-events-none"
           style={{ background: 'linear-gradient(to top, var(--bg-elevated), transparent)' }}
         />
 
-        {/* Action column — top-right on image */}
-        <div className="absolute top-3 right-3 flex flex-col gap-3 items-center z-10">
-          <ActionBtn
-            icon={Mic}
-            label="Podcast"
-            onClick={() => onOpenPanel?.(spark.id, 'podcast')}
-          />
-          <ActionBtn
-            icon={MessageCircle}
-            label="Ask"
-            onClick={() => onOpenPanel?.(spark.id, 'ask')}
-          />
-          <ActionBtn icon={BookOpen} label="Deeper" onClick={() => onOpenPanel?.(spark.id, 'deeper')} />
+        {/* Swipe hint — top-center overlay */}
+        <div className="absolute top-2 inset-x-0 flex flex-col items-center gap-0.5 pointer-events-none">
+          <motion.div
+            animate={{ y: [0, -4, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+          >
+            <ChevronUp className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.5)' }} />
+          </motion.div>
+          <span
+            className="font-mono uppercase"
+            style={{ fontSize: '0.46rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)' }}
+          >
+            swipe up
+          </span>
         </div>
       </div>
 
-      {/* ── Content section (bottom ~44%) ────────────────────────── */}
-      <div className="flex-1 flex flex-col px-5 pt-3 pb-2 overflow-hidden">
+      {/* ── Content section ───────────────────────────────────────── */}
+      <div className="flex-shrink-0 flex flex-col px-5 pt-3 pb-1.5 overflow-hidden">
         {/* Template badge + host row */}
         <div className="flex items-center gap-2 flex-wrap mb-2.5">
           <button
@@ -196,23 +153,34 @@ export default function SparkCard({
         >
           {spark.hookLine}
         </p>
+      </div>
 
-        {/* Spacer + swipe hint */}
-        <div className="flex-1" />
-        <div className="flex flex-col items-center gap-0.5 pb-0.5">
-          <motion.div
-            animate={{ y: [0, -4, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+      {/* ── Bottom pill-button row ─────────────────────────────────── */}
+      <div
+        className="flex-shrink-0 flex items-center justify-center gap-2 px-4"
+        style={{
+          borderTop: '1px solid var(--border-hairline)',
+          background: 'var(--bg-elevated)',
+          height: '56px',
+        }}
+      >
+        {ACTIONS.map(({ icon: Icon, label, tab }) => (
+          <button
+            key={tab}
+            onClick={() => onOpenPanel?.(spark.id, tab)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full transition-all active:scale-95"
+            style={{
+              border: '1px solid var(--border-hairline)',
+              background: 'var(--bg-elevated)',
+            }}
+            aria-label={label}
           >
-            <ChevronUp className="w-4 h-4" style={{ color: 'var(--ink-faint)' }} />
-          </motion.div>
-          <span
-            className="font-mono uppercase"
-            style={{ fontSize: '0.46rem', letterSpacing: '0.18em', color: 'var(--ink-faint)' }}
-          >
-            swipe up
-          </span>
-        </div>
+            <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--ink-muted)' }} />
+            <span className="font-sans text-[0.7rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
+              {label}
+            </span>
+          </button>
+        ))}
       </div>
     </article>
   );
