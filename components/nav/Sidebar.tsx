@@ -5,23 +5,20 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Rabbit,
+  Home,
   Sparkles,
-  LayoutGrid,
-  BookOpen,
-  MessageCircle,
-  Compass,
+  LayoutList,
+  Heart,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/store/uiStore';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Home', icon: Sparkles, exact: true },
-  { href: '/sparks', label: 'Sparks', icon: Sparkles, exact: false },
-  { href: '/templates', label: 'Templates', icon: LayoutGrid, exact: false },
-  { href: '/episodes', label: 'Episodes', icon: BookOpen, exact: false },
-  { href: '/dive', label: 'Dive', icon: MessageCircle, exact: false },
-  { href: '/explore', label: 'Explore', icon: Compass, exact: false },
+  { href: '/',       label: 'Home',  icon: Home,       exact: true  },
+  { href: '/feed',   label: 'Feed',  icon: Sparkles,   exact: false },
+  { href: '/curate', label: 'Build', icon: LayoutList,  exact: false },
+  { href: '/saved',  label: 'Saved', icon: Heart,       exact: false },
 ];
 
 export default function Sidebar() {

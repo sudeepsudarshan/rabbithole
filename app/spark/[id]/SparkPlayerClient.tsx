@@ -5,12 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowLeft, BookOpen, Mic, Play, Pause,
-  Loader2, RotateCcw, MessageSquare, ChevronDown, ChevronUp,
+  Loader2, RotateCcw, MessageSquare, ChevronDown, ChevronUp, Heart,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard } from '@/types/spark';
 import { getPersonaForTemplate } from '@/lib/personas';
 import AskDrawer from '@/components/sparks/AskDrawer';
+import { useSavedStore } from '@/store/savedStore';
 
 interface ArticleState {
   article: string | null;
@@ -140,6 +141,8 @@ export default function SparkPlayerClient({ spark }: { spark: SparkCard }) {
   const [articleState, setArticleState] = useState<ArticleState>({ article: null, loading: false, error: null });
   const hasFetched = useRef(false);
   const persona = getPersonaForTemplate(spark.templateId);
+  const { toggle, isSaved } = useSavedStore();
+  const saved = isSaved(spark.id);
 
   const fetchArticle = useCallback(async () => {
     if (hasFetched.current) return;
@@ -172,9 +175,9 @@ export default function SparkPlayerClient({ spark }: { spark: SparkCard }) {
 
   return (
     <div className="min-h-[100svh] flex flex-col" style={{ background: 'var(--bg-page)' }}>
-      {/* Top bar — back only */}
+      {/* Top bar */}
       <div
-        className="flex items-center px-4 h-12 flex-shrink-0"
+        className="flex items-center justify-between px-4 h-12 flex-shrink-0"
         style={{ borderBottom: '1px solid var(--border-hairline)', background: 'var(--bg-elevated)' }}
       >
         <Link
@@ -184,6 +187,17 @@ export default function SparkPlayerClient({ spark }: { spark: SparkCard }) {
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back
         </Link>
+        <button
+          onClick={() => toggle(spark.id)}
+          className="p-2 transition-all active:scale-90"
+          aria-label={saved ? 'Remove from saved' : 'Save spark'}
+        >
+          <Heart
+            className="w-4 h-4 transition-colors"
+            style={{ color: saved ? '#E24B4A' : 'var(--ink-muted)' }}
+            fill={saved ? '#E24B4A' : 'none'}
+          />
+        </button>
       </div>
 
       {/* Scrollable content */}
