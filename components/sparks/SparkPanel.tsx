@@ -129,7 +129,7 @@ function DeeperTab({
 
       {/* Article content */}
       <div className="px-5 pt-3 pb-6 space-y-4">
-        {/* Template badge + host */}
+        {/* Template badge + lens */}
         <div className="flex items-center gap-3 flex-wrap">
           <span
             className="inline-flex items-center px-2.5 py-1 rounded-full text-[0.6rem] font-mono uppercase tracking-wider border"
@@ -145,12 +145,16 @@ function DeeperTab({
             <span className="flex items-center gap-1.5">
               <span
                 className="w-5 h-5 rounded-full flex items-center justify-center text-[0.55rem] font-bold flex-shrink-0"
-                style={{ background: `${spark.accentColor}25`, color: spark.accentColor }}
+                style={{
+                  background: `${spark.accentColor}20`,
+                  color: spark.accentColor,
+                  boxShadow: `0 0 0 1px ${spark.accentColor}55`,
+                }}
               >
-                {persona.name.charAt(0)}
+                {persona.mark}
               </span>
               <span className="text-[0.6rem] font-mono uppercase tracking-wider" style={{ color: 'var(--ink-muted)' }}>
-                {persona.name} · {persona.oneLiner}
+                {persona.displayName} · {persona.tagline}
               </span>
             </span>
           )}

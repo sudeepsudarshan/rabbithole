@@ -27,6 +27,7 @@ const NAV_LINKS = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { sidebarOpen, setSidebarOpen, theme, toggleTheme, sparkPanelOpen } = useUIStore();
+  const hideRabbit = sparkPanelOpen || pathname.startsWith('/spark/');
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href);
@@ -34,7 +35,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Floating rabbit button — hidden when SparkPanel is open to prevent overlap */}
-      {!sparkPanelOpen && (
+      {!hideRabbit && (
         <button
           onClick={() => setSidebarOpen(true)}
           className={cn(

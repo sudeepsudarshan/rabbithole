@@ -23,7 +23,7 @@ export default function Hero() {
         >
           <div className="h-px w-10 bg-[var(--ink-faint)]" />
           <span className="font-mono text-[0.6875rem] text-ink-muted tracking-widest">
-            AI curiosity platform
+            A nicer way to scroll
           </span>
           <div className="h-px w-10 bg-[var(--ink-faint)]" />
         </motion.div>
@@ -46,10 +46,11 @@ export default function Hero() {
         <motion.p
           {...fadeUp}
           transition={{ duration: 0.3, ease: 'easeOut', delay: 0.2 }}
-          className="font-sans text-lg text-ink-secondary max-w-xl mx-auto mb-10 leading-relaxed"
+          className="font-serif italic text-lg text-ink-secondary max-w-xl mx-auto mb-10 leading-relaxed"
         >
-          Start with any question. Go somewhere you never expected.
-          A curiosity-driven podcast where every conversation digs deeper.
+          The internet is loud and mostly stressful. This isn&rsquo;t that.
+          We send you down rabbit holes that make the world feel bigger, stranger, funnier,
+          and a little more wonderful.
         </motion.p>
 
         {/* CTAs */}

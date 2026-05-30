@@ -2,15 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Rabbit, Sparkles, LayoutGrid, BookOpen, MessageCircle, Menu, X } from 'lucide-react';
+import { Rabbit, Sparkles, LayoutList, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/store/uiStore';
 
 const NAV_LINKS = [
-  { href: '/sparks', label: 'Sparks', icon: Sparkles },
-  { href: '/templates', label: 'Templates', icon: LayoutGrid },
-  { href: '/episodes', label: 'Episodes', icon: BookOpen },
-  { href: '/dive', label: 'Dive', icon: MessageCircle },
+  { href: '/feed', label: 'Feed', icon: Sparkles },
+  { href: '/curate', label: 'Curate', icon: LayoutList },
 ];
 
 export default function NavBar() {

@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { Mic, MessageCircle, BookOpen, ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
 import { cn } from '@/lib/utils';
-import { type PanelTab } from './SparkPanel';
 import { getPersonaForTemplate } from '@/lib/personas';
 
 interface SparkCardProps {
@@ -13,34 +13,33 @@ interface SparkCardProps {
   isActive?: boolean;
   onOpenTemplatePicker?: () => void;
   selectedTemplateIds?: string[];
-  onOpenPanel?: (sparkId: string, tab: PanelTab) => void;
 }
-
-const ACTIONS: { icon: React.ElementType; label: string; tab: PanelTab }[] = [
-  { icon: BookOpen, label: 'Deeper', tab: 'deeper' },
-  { icon: MessageCircle, label: 'Ask', tab: 'ask' },
-  { icon: Mic, label: 'Podcast', tab: 'podcast' },
-];
 
 export default function SparkCard({
   spark,
   isActive = false,
   onOpenTemplatePicker,
   selectedTemplateIds = [],
-  onOpenPanel,
 }: SparkCardProps) {
+  const router = useRouter();
   const templateName = spark.templateLabel.split(' · ')[0];
   const isFiltered = selectedTemplateIds.length > 0;
   const persona = getPersonaForTemplate(spark.templateId);
+
+  function handleCardTap() {
+    if (isActive) router.push(`/spark/${spark.id}`);
+  }
 
   return (
     <article
       className={cn(
         'relative w-full h-full flex flex-col overflow-hidden',
-        !isActive && 'pointer-events-none'
+        !isActive && 'pointer-events-none',
+        isActive && 'cursor-pointer'
       )}
       style={{ background: 'var(--bg-elevated)' }}
       aria-hidden={!isActive}
+      onClick={handleCardTap}
     >
       {/* ── Image section — fills remaining space above content ───── */}
       <div className="relative flex-1 min-h-0">
@@ -83,11 +82,11 @@ export default function SparkCard({
       </div>
 
       {/* ── Content section ───────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex flex-col px-5 pt-3 pb-1.5 overflow-hidden">
-        {/* Template badge + host row */}
+      <div className="flex-shrink-0 flex flex-col px-5 pt-3 pb-4 overflow-hidden">
+        {/* Template badge + lens row */}
         <div className="flex items-center gap-2 flex-wrap mb-2.5">
           <button
-            onClick={onOpenTemplatePicker}
+            onClick={e => { e.stopPropagation(); onOpenTemplatePicker?.(); }}
             className="inline-flex items-center gap-1.5 px-2.5 py-[3px] rounded-full text-[0.6rem] font-mono uppercase tracking-wider border transition-all active:scale-95"
             style={{
               color: spark.accentColor,
@@ -116,15 +115,19 @@ export default function SparkCard({
             <div className="flex items-center gap-1">
               <div
                 className="w-4 h-4 rounded-full flex items-center justify-center text-[0.48rem] font-bold flex-shrink-0"
-                style={{ background: `${spark.accentColor}25`, color: spark.accentColor }}
+                style={{
+                  background: `${spark.accentColor}20`,
+                  color: spark.accentColor,
+                  boxShadow: `0 0 0 1px ${spark.accentColor}55`,
+                }}
               >
-                {persona.name.charAt(0)}
+                {persona.mark}
               </div>
               <span
                 className="text-[0.58rem] font-mono uppercase tracking-wider"
                 style={{ color: 'var(--ink-muted)' }}
               >
-                {persona.name}
+                {persona.displayName}
               </span>
             </div>
           )}
@@ -146,40 +149,13 @@ export default function SparkCard({
           {spark.answer}
         </p>
 
-        {/* Hook line */}
+        {/* Tap hint */}
         <p
-          className="mt-2 leading-snug line-clamp-2 flex-shrink-0"
-          style={{ fontSize: '0.76rem', color: 'var(--ink-muted)', fontStyle: 'italic' }}
+          className="mt-2 font-mono text-[0.52rem] tracking-widest uppercase"
+          style={{ color: 'var(--ink-faint)' }}
         >
-          {spark.hookLine}
+          Tap to explore →
         </p>
-      </div>
-
-      {/* ── Bottom pill-button row ─────────────────────────────────── */}
-      <div
-        className="flex-shrink-0 flex items-center justify-center gap-2 px-4"
-        style={{
-          background: 'var(--bg-elevated)',
-          height: '56px',
-        }}
-      >
-        {ACTIONS.map(({ icon: Icon, label, tab }) => (
-          <button
-            key={tab}
-            onClick={() => onOpenPanel?.(spark.id, tab)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full transition-all active:scale-95"
-            style={{
-              border: '1px solid var(--border-hairline)',
-              background: 'var(--bg-elevated)',
-            }}
-            aria-label={label}
-          >
-            <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--ink-muted)' }} />
-            <span className="font-sans text-[0.7rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
-              {label}
-            </span>
-          </button>
-        ))}
       </div>
     </article>
   );
