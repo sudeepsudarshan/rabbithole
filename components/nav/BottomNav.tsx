@@ -13,7 +13,7 @@ const ITEMS = [
 ];
 
 // Paths where the bottom nav should be hidden (full-screen experiences)
-const HIDDEN_PATHS = ['/sparks', '/feed'];
+const HIDDEN_PATHS = ['/sparks', '/feed', '/curate', '/spark'];
 
 export default function BottomNav() {
   const pathname = usePathname();
