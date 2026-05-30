@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { TEMPLATES } from '@/lib/templates';
-import { HOST_RULES } from '@/lib/personas';
+import { LENS_RULES } from '@/lib/personas';
 
 // Simple in-memory rate limiter (resets on cold start)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     ? `\n\nThe user is exploring this specific spark:\nTITLE: "${sparkTitle}"\nCORE INSIGHT: "${sparkAnswer}"\n\nAnswer questions specifically about this topic. 100-160 words per response.`
     : '';
 
-  const systemPrompt = HOST_RULES + '\n\n' + template.systemPrompt + sparkContext;
+  const systemPrompt = LENS_RULES + '\n\n' + template.systemPrompt + sparkContext;
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 

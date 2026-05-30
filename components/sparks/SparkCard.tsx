@@ -84,7 +84,7 @@ export default function SparkCard({
 
       {/* ── Content section ───────────────────────────────────────── */}
       <div className="flex-shrink-0 flex flex-col px-5 pt-3 pb-1.5 overflow-hidden">
-        {/* Template badge + host row */}
+        {/* Template badge + lens row */}
         <div className="flex items-center gap-2 flex-wrap mb-2.5">
           <button
             onClick={onOpenTemplatePicker}
@@ -116,15 +116,19 @@ export default function SparkCard({
             <div className="flex items-center gap-1">
               <div
                 className="w-4 h-4 rounded-full flex items-center justify-center text-[0.48rem] font-bold flex-shrink-0"
-                style={{ background: `${spark.accentColor}25`, color: spark.accentColor }}
+                style={{
+                  background: `${spark.accentColor}20`,
+                  color: spark.accentColor,
+                  boxShadow: `0 0 0 1px ${spark.accentColor}55`,
+                }}
               >
-                {persona.name.charAt(0)}
+                {persona.mark}
               </div>
               <span
                 className="text-[0.58rem] font-mono uppercase tracking-wider"
                 style={{ color: 'var(--ink-muted)' }}
               >
-                {persona.name}
+                {persona.displayName}
               </span>
             </div>
           )}

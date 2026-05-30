@@ -15,5 +15,5 @@ export interface Template {
   systemPrompt: string;          // Full AI system prompt
   inputPlaceholder: string;      // Example question for the input
   exampleTopics: string[];       // 4–5 best-fit topics
-  hostId?: string;               // Persona ID from lib/personas.ts
+  lensId?: string;               // Lens ID from lib/personas.ts
 }
