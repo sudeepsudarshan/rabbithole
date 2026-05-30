@@ -14,6 +14,7 @@ export interface DiveRequest {
 export interface GenerateSparkRequest {
   templateId: string;
   topic: string;
+  trendItem?: import('@/types/trends').TrendItem;
 }
 
 export interface GenerateSparkResponse {
@@ -21,6 +22,8 @@ export interface GenerateSparkResponse {
   question: string;
   answer: string;
   hookLine: string;
+  skip?: boolean;
+  skipReason?: string;
 }
 
 export interface TrackEventRequest {
