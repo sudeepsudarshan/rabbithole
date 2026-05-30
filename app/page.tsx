@@ -1,11 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { EPISODES } from '@/lib/episodes';
-import EpisodeCard from '@/components/home/EpisodeCard';
 import BrowseCurateCards from '@/components/home/BrowseCurateCards';
-
-const [featured, ...rest] = EPISODES;
-const moreEpisodes = rest.slice(0, 3);
 
 export default function HomePage() {
   return (
@@ -61,45 +56,6 @@ export default function HomePage() {
         Every Spark is new this week. &nbsp;Come back tomorrow — it refreshes.
       </p>
 
-      {/* ── Featured episode ────────────────────────────────────── */}
-      {featured && (
-        <section className="px-5 pb-10 max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="font-mono text-[0.65rem] uppercase tracking-widest" style={{ color: 'var(--ink-faint)' }}>
-              Featured episode
-            </span>
-            <div className="h-px flex-1" style={{ background: 'var(--border-hairline)' }} />
-          </div>
-          <EpisodeCard episode={featured} featured />
-        </section>
-      )}
-
-      {/* ── More rabbit holes ───────────────────────────────────── */}
-      {moreEpisodes.length > 0 && (
-        <section className="px-5 pb-10 max-w-3xl mx-auto">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[0.65rem] uppercase tracking-widest" style={{ color: 'var(--ink-faint)' }}>
-                More rabbit holes
-              </span>
-              <div className="h-px w-12" style={{ background: 'var(--border-hairline)' }} />
-            </div>
-            <Link
-              href="/episodes"
-              className="flex items-center gap-1 font-mono text-[0.65rem] tracking-wide transition-colors hover:text-[var(--ink-primary)]"
-              style={{ color: 'var(--ink-muted)' }}
-            >
-              All episodes <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {moreEpisodes.map(ep => (
-              <EpisodeCard key={ep.slug} episode={ep} />
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ── Manifesto link ──────────────────────────────────────── */}
       <div className="px-5 pb-10 text-center">
         <Link
@@ -116,7 +72,7 @@ export default function HomePage() {
         <div className="flex items-center justify-center gap-10 md:gap-16 mb-6">
           {[
             { value: '20', label: 'Templates' },
-            { value: String(EPISODES.length), label: 'Episodes' },
+            { value: '40+', label: 'Sources' },
             { value: '∞', label: 'Rabbit Holes' },
           ].map(({ value, label }, i) => (
             <div key={label} className="flex items-center gap-10 md:gap-16">

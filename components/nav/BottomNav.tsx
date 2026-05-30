@@ -7,13 +7,13 @@ import { cn } from '@/lib/utils';
 
 const ITEMS = [
   { href: '/', label: 'Home', icon: Home, exact: true },
-  { href: '/sparks', label: 'Sparks', icon: Sparkles, exact: false },
-  { href: '/episodes', label: 'Episodes', icon: BookOpen, exact: false },
+  { href: '/feed', label: 'Feed', icon: Sparkles, exact: false },
+  { href: '/saved', label: 'Saved', icon: BookOpen, exact: false },
   { href: '/dive', label: 'Ask AI', icon: MessageCircle, exact: false },
 ];
 
 // Paths where the bottom nav should be hidden (full-screen experiences)
-const HIDDEN_PATHS = ['/sparks'];
+const HIDDEN_PATHS = ['/sparks', '/feed'];
 
 export default function BottomNav() {
   const pathname = usePathname();

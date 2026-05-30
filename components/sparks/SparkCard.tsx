@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { Mic, MessageCircle, BookOpen, ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { Play, Mic, MessageCircle, BookOpen, ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
 import { cn } from '@/lib/utils';
@@ -15,12 +16,6 @@ interface SparkCardProps {
   selectedTemplateIds?: string[];
   onOpenPanel?: (sparkId: string, tab: PanelTab) => void;
 }
-
-const ACTIONS: { icon: React.ElementType; label: string; tab: PanelTab }[] = [
-  { icon: BookOpen, label: 'Deeper', tab: 'deeper' },
-  { icon: MessageCircle, label: 'Ask', tab: 'ask' },
-  { icon: Mic, label: 'Podcast', tab: 'podcast' },
-];
 
 export default function SparkCard({
   spark,
@@ -159,31 +154,58 @@ export default function SparkCard({
         </p>
       </div>
 
-      {/* ── Bottom pill-button row ─────────────────────────────────── */}
+      {/* ── Depth strip ───────────────────────────────────────────── */}
       <div
-        className="flex-shrink-0 flex items-center justify-center gap-2 px-4"
-        style={{
-          background: 'var(--bg-elevated)',
-          height: '56px',
-        }}
+        className="flex-shrink-0 flex items-center gap-1.5 px-3"
+        style={{ background: 'var(--bg-elevated)', height: '52px' }}
       >
-        {ACTIONS.map(({ icon: Icon, label, tab }) => (
-          <button
-            key={tab}
-            onClick={() => onOpenPanel?.(spark.id, tab)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full transition-all active:scale-95"
-            style={{
-              border: '1px solid var(--border-hairline)',
-              background: 'var(--bg-elevated)',
-            }}
-            aria-label={label}
-          >
-            <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--ink-muted)' }} />
-            <span className="font-sans text-[0.7rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
-              {label}
-            </span>
-          </button>
-        ))}
+        <button
+          onClick={() => onOpenPanel?.(spark.id, 'deeper')}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all active:scale-95"
+          style={{ border: '1px solid var(--border-hairline)', background: 'var(--bg-elevated)' }}
+          aria-label="Open Spark"
+        >
+          <Play className="w-3 h-3 shrink-0" style={{ color: 'var(--ink-muted)' }} />
+          <span className="font-sans text-[0.68rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
+            Open Spark
+          </span>
+        </button>
+
+        <Link
+          href={`/spark/${spark.id}#read`}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all active:scale-95"
+          style={{ border: '1px solid var(--border-hairline)', background: 'var(--bg-elevated)' }}
+          aria-label="Read Episode"
+        >
+          <BookOpen className="w-3 h-3 shrink-0" style={{ color: 'var(--ink-muted)' }} />
+          <span className="font-sans text-[0.68rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
+            Read
+          </span>
+        </Link>
+
+        <Link
+          href={`/spark/${spark.id}#listen`}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all active:scale-95"
+          style={{ border: '1px solid var(--border-hairline)', background: 'var(--bg-elevated)' }}
+          aria-label="Listen to Podcast"
+        >
+          <Mic className="w-3 h-3 shrink-0" style={{ color: 'var(--ink-muted)' }} />
+          <span className="font-sans text-[0.68rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
+            Listen
+          </span>
+        </Link>
+
+        <button
+          onClick={() => onOpenPanel?.(spark.id, 'ask')}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all active:scale-95 ml-auto"
+          style={{ border: '1px solid var(--border-hairline)', background: 'var(--bg-elevated)' }}
+          aria-label="Ask AI"
+        >
+          <MessageCircle className="w-3 h-3 shrink-0" style={{ color: 'var(--ink-muted)' }} />
+          <span className="font-sans text-[0.68rem] font-medium" style={{ color: 'var(--ink-secondary)' }}>
+            Ask
+          </span>
+        </button>
       </div>
     </article>
   );

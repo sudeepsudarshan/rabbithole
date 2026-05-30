@@ -18,7 +18,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 const MAX_CACHE = 10;
 
-export default function SparkFeedHome() {
+interface SparkFeedHomeProps {
+  overrideSparks?: import('@/types/spark').SparkCard[];
+}
+
+export default function SparkFeedHome({ overrideSparks }: SparkFeedHomeProps = {}) {
   const { setSparkPanelOpen } = useUIStore();
   const [seed, setSeed] = useState(0);
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([]);
@@ -39,13 +43,14 @@ export default function SparkFeedHome() {
 
   // Re-shuffle when seed or filter changes
   const sparks = useMemo(() => {
+    const base = overrideSparks ?? SPARKS;
     const pool = selectedTemplateIds.length
-      ? SPARKS.filter((s) => selectedTemplateIds.includes(s.templateId))
-      : SPARKS;
+      ? base.filter((s) => selectedTemplateIds.includes(s.templateId))
+      : base;
     // Always need at least 1 spark
-    return shuffle(pool.length ? pool : SPARKS);
+    return shuffle(pool.length ? pool : base);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seed, selectedTemplateIds]);
+  }, [seed, selectedTemplateIds, overrideSparks]);
 
   const handleReshuffle = useCallback(() => setSeed((s) => s + 1), []);
 

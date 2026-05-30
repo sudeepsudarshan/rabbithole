@@ -7,7 +7,7 @@ const CARDS = [
     title: "I'm curious. Show me something.",
     body: 'Random Sparks from across the world today. Pulled from science, history, comedy, money, space — whatever\'s interesting.',
     cta: 'Start',
-    href: '/sparks',
+    href: '/feed',
     accentColor: '#C9582A',
   },
   {
@@ -15,7 +15,7 @@ const CARDS = [
     title: 'Build my rabbit hole.',
     body: "Pick what you're into, how you want to feel, and the Lenses you trust. We assemble the rest.",
     cta: 'Build it',
-    href: '/explore',
+    href: '/curate',
     accentColor: '#D4A437',
   },
 ];
