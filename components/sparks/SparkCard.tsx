@@ -2,11 +2,12 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChevronUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { ChevronUp, SlidersHorizontal, ChevronDown, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SparkCard as SparkCardType } from '@/types/spark';
 import { cn } from '@/lib/utils';
 import { getPersonaForTemplate } from '@/lib/personas';
+import { useSavedStore } from '@/store/savedStore';
 
 interface SparkCardProps {
   spark: SparkCardType;
@@ -22,6 +23,8 @@ export default function SparkCard({
   selectedTemplateIds = [],
 }: SparkCardProps) {
   const router = useRouter();
+  const { toggle, isSaved } = useSavedStore();
+  const saved = isSaved(spark.id);
   const templateName = spark.templateLabel.split(' · ')[0];
   const isFiltered = selectedTemplateIds.length > 0;
   const persona = getPersonaForTemplate(spark.templateId);
@@ -131,6 +134,18 @@ export default function SparkCard({
               </span>
             </div>
           )}
+
+          <button
+            onClick={e => { e.stopPropagation(); toggle(spark.id); }}
+            className="ml-auto p-1.5 rounded-full transition-all active:scale-90"
+            aria-label={saved ? 'Remove from saved' : 'Save spark'}
+          >
+            <Heart
+              className="w-4 h-4 transition-colors"
+              style={{ color: saved ? '#E24B4A' : 'var(--ink-faint)' }}
+              fill={saved ? '#E24B4A' : 'none'}
+            />
+          </button>
         </div>
 
         {/* Title */}
